@@ -2,15 +2,6 @@
   "object": {
     "pins": [
       {
-        "package": "core",
-        "repositoryURL": "https://github.com/tuist/core.git",
-        "state": {
-          "branch": null,
-          "revision": "6b2741f3b732265d1d090c0fa02baffc99e0966b",
-          "version": "0.1.0"
-        }
-      },
-      {
         "package": "Nimble",
         "repositoryURL": "https://github.com/Quick/Nimble.git",
         "state": {
@@ -53,15 +44,6 @@
           "branch": null,
           "revision": "8fc088dcf72802801efeecba76ea8fb041fb773d",
           "version": "4.0.0"
-        }
-      },
-      {
-        "package": "SwiftPM",
-        "repositoryURL": "https://github.com/apple/swift-package-manager",
-        "state": {
-          "branch": null,
-          "revision": "6983434787dec4e543e9d398a0a9acf63ccd4da1",
-          "version": "0.2.1"
         }
       }
     ]

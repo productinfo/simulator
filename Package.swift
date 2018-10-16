@@ -3,21 +3,21 @@
 import PackageDescription
 
 let package = Package(
-    name: "simctl",
+    name: "simulator",
     products: [
-        .library(name: "simctl", type: .dynamic, targets: ["simctl"]),
+        .library(name: "simulator", type: .dynamic, targets: ["simulator"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/tuist/core.git", .upToNextMinor(from: "0.1.0"))
+        .package(url: "https://github.com/Carthage/ReactiveTask.git", .upToNextMinor(from: "0.15.0")),
     ],
     targets: [
         .target(
-            name: "simctl",
-            dependencies: ["TuistCore"]
+            name: "simulator",
+            dependencies: ["ReactiveTask"]
         ),
         .testTarget(
-            name: "simctlTests",
-            dependencies: ["TuistCoreTesting", "simctl"]
+            name: "simulatorTests",
+            dependencies: ["simulator"]
         ),
     ]
 )
