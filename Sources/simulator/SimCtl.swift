@@ -8,7 +8,7 @@ protocol SimCtling {
     /// - Parameter arguments: Arguments to be passed to simctl.
     /// - Returns: The output from the command.
     /// - Throws: A SimCtlError if the execution fails.
-    func simctl(_ arguments: String...) throws -> String
+    func simctl(_ arguments: String...) throws -> Data
 }
 
 /// Error that can be thrown when running the simctl command.
@@ -17,17 +17,19 @@ protocol SimCtling {
 /// - invalidOutputFormat: Thrown when the output doesn't have the expected .utf8 format.
 enum SimCtlError: Error {
     case noResult
-    case invalidOutputFormat
 }
 
 /// Struct that conforms the SimCtling providing a default implementation.
 struct SimCtl: SimCtling {
+    /// Shared instance of SimCtl.
+    public static let shared: SimCtling = SimCtl()
+
     /// Runs simctl with the given arguments.
     ///
     /// - Parameter arguments: Arguments to be passed to simctl.
     /// - Returns: The output from the command.
     /// - Throws: A SimCtlError if the execution fails.
-    func simctl(_ arguments: String...) throws -> String {
+    func simctl(_ arguments: String...) throws -> Data {
         var arguments = arguments
         arguments.insert("simctl", at: 0)
 
@@ -40,10 +42,7 @@ struct SimCtl: SimCtling {
         case let .failure(error):
             throw error
         case let .success(value):
-            guard let outputString = String(data: value, encoding: .utf8) else {
-                throw SimCtlError.invalidOutputFormat
-            }
-            return outputString
+            return value
         }
     }
 }
