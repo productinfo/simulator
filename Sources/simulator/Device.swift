@@ -7,7 +7,7 @@ public class Device: Decodable, Equatable {
     public let availability: String
 
     /// True if the device is available.
-    public let isAvailable: Bool
+    public let isAvailable: Bool?
 
     /// A string that represents the state of the device.
     /// Example: Shutdown
@@ -24,7 +24,7 @@ public class Device: Decodable, Equatable {
     /// When the device is not available, this string contains
     /// a description of why the device is not available.
     /// If the device is available, this string is empty.
-    public let availabilityError: String
+    public let availabilityError: String?
 
     /// Name of the device runtime.
     /// Example: iOS 12.1
@@ -53,10 +53,10 @@ public class Device: Decodable, Equatable {
     ///   - runtimeName: Name of the device runtime.
     init(availability: String,
          state: String,
-         isAvailable: Bool,
+         isAvailable: Bool?,
          name: String,
          udid: String,
-         availabilityError: String,
+         availabilityError: String?,
          runtimeName: String) {
         self.availability = availability
         self.isAvailable = isAvailable
@@ -98,7 +98,6 @@ public class Device: Decodable, Equatable {
             try deviceDictionaries.forEach { deviceDictionary in
                 var deviceDictionary = deviceDictionary
                 deviceDictionary["runtimeName"] = runtime
-                print(deviceDictionary)
                 let deviceData = try JSONSerialization.data(withJSONObject: deviceDictionary, options: [])
                 devices.append(try decoder.decode(Device.self, from: deviceData))
             }
