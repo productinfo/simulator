@@ -1,5 +1,5 @@
 import Foundation
-@testable import simulator
+@testable import Simulator
 import XCTest
 
 final class SimCtlTests: XCTestCase {

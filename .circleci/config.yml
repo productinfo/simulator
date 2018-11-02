@@ -19,7 +19,7 @@ jobs:
             swift build -c release
       - run:
           name: Run tests
-          command: xcodebuild test -scheme simctl-Package -enableCodeCoverage YES
+          command: xcodebuild test -scheme Simulator-Package -enableCodeCoverage YES
       - run:
           name: Send test coverage report
           command: bash <(curl -s https://codecov.io/bash)

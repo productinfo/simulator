@@ -3,21 +3,21 @@
 import PackageDescription
 
 let package = Package(
-    name: "simulator",
+    name: "Simulator",
     products: [
-        .library(name: "simulator", type: .dynamic, targets: ["simulator"]),
+        .library(name: "Simulator", type: .dynamic, targets: ["Simulator"]),
     ],
     dependencies: [
         .package(url: "https://github.com/Carthage/ReactiveTask.git", .upToNextMinor(from: "0.15.0")),
     ],
     targets: [
         .target(
-            name: "simulator",
+            name: "Simulator",
             dependencies: ["ReactiveTask"]
         ),
         .testTarget(
-            name: "simulatorTests",
-            dependencies: ["simulator"]
+            name: "SimulatorTests",
+            dependencies: ["Simulator"]
         ),
     ]
 )
