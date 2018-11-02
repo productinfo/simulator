@@ -1,7 +1,7 @@
 import Foundation
 @testable import Simulator
 
-final class MockSimCtl: SimCtling {
+final class MockShell: Shelling {
     private var stubs: [[String]: Any] = [:]
 
     func simctl(_ arguments: String...) throws -> Data {

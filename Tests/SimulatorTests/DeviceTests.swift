@@ -3,11 +3,11 @@ import Foundation
 import XCTest
 
 final class DeviceTests: XCTestCase {
-    var simctl: MockSimCtl!
+    var shell: MockShell!
 
     override func setUp() {
         super.setUp()
-        simctl = MockSimCtl()
+        shell = MockShell()
     }
 
     func test_list_returns_a_non_empty_list() throws {
@@ -16,7 +16,7 @@ final class DeviceTests: XCTestCase {
     }
 
     func test_list_maps_the_devices() throws {
-        simctl.stub("list", "-j", "devices", with: [
+        shell.stub("list", "-j", "devices", with: [
             "devices": [
                 "iOS 12.1": [
                     [
@@ -30,7 +30,7 @@ final class DeviceTests: XCTestCase {
                 ],
             ],
         ])
-        let got = try Device.list(simctl: simctl)
+        let got = try Device.list(shell: shell)
         XCTAssertEqual(got.count, 1)
 
         XCTAssertEqual(got.first?.availability, "(unavailable, runtime profile not found)")

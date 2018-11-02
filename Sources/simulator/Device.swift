@@ -74,18 +74,18 @@ public class Device: Decodable, Equatable {
     /// - Returns: List of devices.
     /// - Throws: An error if the simctl command fails.
     public static func list() throws -> [Device] {
-        return try list(simctl: SimCtl.shared)
+        return try list(shell: Shell.shared)
     }
 
     // MARK: - Internal
 
     /// Gets the list of devices from the system.
     ///
-    /// - Parameter simctl: Instace of SimCtl to run the commands.
+    /// - Parameter shell: Instance of shell to run the commands.
     /// - Returns: List of devices.
     /// - Throws: An error if the simctl command fails.
-    static func list(simctl: SimCtling) throws -> [Device] {
-        let data = try simctl.simctl("list", "-j", "devices")
+    static func list(shell: Shelling) throws -> [Device] {
+        let data = try shell.simctl("list", "-j", "devices")
         let decoder = JSONDecoder()
 
         guard let dictionary = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
