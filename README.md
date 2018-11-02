@@ -3,7 +3,7 @@
 A simctl wrapper in Swift.
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-[![CircleCI](https://circleci.com/gh/tuist/tsimctlsvg?style=svg)](https://circleci.com/gh/tuist/simctl)
+[![CircleCI](https://circleci.com/gh/tuist/simulator.svg?style=svg)](https://circleci.com/gh/tuist/simulator)
 [![codecov](https://codecov.io/gh/tuist/simctl/branch/master/graph/badge.svg)](https://codecov.io/gh/tuist/simctl)
 [![Slack](http://slack.tuist.io/badge.svg)](http://slack.tuist.io)
 
