@@ -11,7 +11,8 @@ final class SimCtlTests: XCTestCase {
     }
 
     func test_simctl() throws {
-        let got = try subject.simctl("help")
-        XCTAssertTrue(got.contains("Command line utility to control the Simulator"))
+        let data = try subject.simctl("help")
+        let output = String(data: data, encoding: .utf8) ?? ""
+        XCTAssertTrue(output.contains("Command line utility to control the Simulator"))
     }
 }

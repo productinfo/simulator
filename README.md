@@ -14,6 +14,14 @@ A simctl wrapper in Swift.
 3.  Open `Simulator.xcodeproj`.
 4.  Have fun 🤖
 
+## Usage
+
+**Listing the devices**
+
+```swift
+let devices = Device.list
+```
+
 ## Donations
 
 Tuist is a non-profit project run entirely by unpaid volunteers. We need your funds to pay for software, hardware and hosting around continuous integration and future improvements to the project. Every donation will be spent on making Tuist better for our users.
