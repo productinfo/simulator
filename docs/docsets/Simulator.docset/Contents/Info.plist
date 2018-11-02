@@ -3,11 +3,11 @@
 <plist version="1.0">
   <dict>
     <key>CFBundleIdentifier</key>
-      <string>com.jazzy.simctl</string>
+      <string>com.jazzy.simulator</string>
     <key>CFBundleName</key>
-      <string>simctl</string>
+      <string>Simulator</string>
     <key>DocSetPlatformFamily</key>
-      <string>simctl</string>
+      <string>simulator</string>
     <key>isDashDocset</key>
       <true/>
     <key>dashIndexFilePath</key>
