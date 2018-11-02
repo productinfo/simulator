@@ -11,6 +11,6 @@ This document describes the process of releasing new versions of xcodeproj.
 - Patch if it's a hotfix release.
 
 4.  Update the `CHANGELOG.md` to include the version section.
-5.  Generate the documentation with `jazzy`.
+5.  Generate the documentation by running [this script](https://github.com/tuist/jazzy-theme).
 6.  Commit the changes and tag the commit with the version `git tag x.y.z`.
 7.  Push the changes to remote and create a new release on GitHub including the changelog.
