@@ -2,12 +2,12 @@ import Foundation
 @testable import Simulator
 import XCTest
 
-final class SimCtlTests: XCTestCase {
-    var subject: SimCtl!
+final class ShellTests: XCTestCase {
+    var subject: Shell!
 
     override func setUp() {
         super.setUp()
-        subject = SimCtl()
+        subject = Shell()
     }
 
     func test_simctl() throws {

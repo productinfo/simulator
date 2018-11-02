@@ -1,8 +1,8 @@
 import Foundation
 import ReactiveTask
 
-/// Protocol that defines the interface of an entity that runs simctl commands.
-protocol SimCtling {
+/// Protocol that defines the interface of an entity that runs shell commands.
+protocol Shelling {
     /// Runs simctl with the given arguments.
     ///
     /// - Parameter arguments: Arguments to be passed to simctl.
@@ -19,10 +19,10 @@ enum SimCtlError: Error {
     case noResult
 }
 
-/// Struct that conforms the SimCtling providing a default implementation.
-struct SimCtl: SimCtling {
-    /// Shared instance of SimCtl.
-    public static let shared: SimCtling = SimCtl()
+/// Struct that conforms the Shelling providing a default implementation.
+struct Shell: Shelling {
+    /// Shared instance of Shell.
+    public static let shared: Shelling = Shell()
 
     /// Runs simctl with the given arguments.
     ///
