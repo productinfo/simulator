@@ -98,6 +98,7 @@ public class Device: Decodable, Equatable {
             try deviceDictionaries.forEach { deviceDictionary in
                 var deviceDictionary = deviceDictionary
                 deviceDictionary["runtimeName"] = runtime
+                print(deviceDictionary)
                 let deviceData = try JSONSerialization.data(withJSONObject: deviceDictionary, options: [])
                 devices.append(try decoder.decode(Device.self, from: deviceData))
             }
