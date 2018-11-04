@@ -16,10 +16,21 @@ A simctl wrapper in Swift.
 
 ## Usage
 
-**Listing the devices**
+**Devices**
 
 ```swift
+// List devices
 let devices = Device.list
+```
+
+**Runtimes**
+
+```swift
+// List runtimes
+let runtimes = Runtime.list
+
+// Get the latest runtime
+let latestiOS = Runtime.latest(platform: .iOS)
 ```
 
 ## Open source
@@ -27,3 +38,7 @@ let devices = Device.list
 Tuist is a proud supporter of the [Software Freedom Conservacy](https://sfconservancy.org/)
 
 <a href="https://sfconservancy.org/supporter/"><img src="https://sfconservancy.org/img/supporter-badge.png" width="194" height="90" alt="Become a Conservancy Supporter!" border="0"/></a>
+
+```
+
+```

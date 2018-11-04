@@ -1,0 +1,18 @@
+## Commands
+- screenshot
+- boot
+- create
+- launch
+- launchApp
+- openurl
+- rename
+- reset
+- shutdown
+- spawn
+- terminate
+- warmup
+
+## Test
+- kill
+- erase
+- uninstall
