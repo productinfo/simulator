@@ -10,7 +10,7 @@ public struct Runtime: Decodable, Equatable {
     /// - iOS: iOS
     /// - watchOS: watchOS
     /// - tvOS: tvOS descriptiontvOS
-    enum Platform: String {
+    public enum Platform: String {
         case iOS
         case watchOS
         case tvOS
@@ -19,37 +19,37 @@ public struct Runtime: Decodable, Equatable {
 
     /// The path where the runtime bundle is.
     /// Example: /Applications/Xcode.app/Contents/Developer/Platforms/WatchOS.platform/Developer/Library/CoreSimulator/Profiles/Runtimes/watchOS.simruntime
-    let bundlePath: String?
+    public let bundlePath: String?
 
     /// If the runtime is not available, this string includes a description of explaining why it's not available.
-    let availabilityError: String?
+    public let availabilityError: String?
 
     /// The build version of the runtime.
     /// Example: 16R591
-    let buildVersion: String
+    public let buildVersion: String
 
     /// Describes the availability of the runtime.\
     /// Example: (available)
-    let availability: String
+    public let availability: String
 
     /// True when the runtime is available.
-    let isAvailable: Bool?
+    public let isAvailable: Bool?
 
     /// Uniquely identifies the runtime.
     /// Example: com.apple.CoreSimulator.SimRuntime.watchOS-5-1
-    let identifier: String
+    public let identifier: String
 
     /// Runtime version.
     /// Example: 5.1
-    let version: String
+    public let version: String
 
     /// Runtime name.
     /// Example: watchOS 5.1
-    let name: String
+    public let name: String
 
     /// Returns the runtime platform.
-    var platform: Platform {
-        return name.split(separator: "/").first.flatMap({ Platform(rawValue: String($0)) }) ?? .unknown
+    public var platform: Platform {
+        return name.split(separator: " ").first.flatMap({ Platform(rawValue: String($0)) }) ?? .unknown
     }
 
     /// Coding keys
@@ -91,7 +91,29 @@ public struct Runtime: Decodable, Equatable {
         return try Reactive.list().single()?.dematerialize() ?? []
     }
 
+    /// Returns a signal producer that returns the latest runtime of a given platform.
+    /// This is useful, for example, to get the latest determine the latest available runtime we can run our tests on.
+    ///
+    /// - Parameter platform: Platform whose latest runtime will be obtained.
+    /// - Returns: Signal producer that returns the latest runtime.
+    /// - Throws: A SimulatorError if the latest runtime cannot be obtained
+    public static func latest(platform: Platform) throws -> Runtime? {
+        return try Reactive.latest(platform: platform).single()?.dematerialize()
+    }
+
     public enum Reactive {
+        /// Returns a signal producer that returns the latest runtime of a given platform.
+        /// This is useful, for example, to get the latest determine the latest available runtime we can run our tests on.
+        ///
+        /// - Parameter platform: Platform whose latest runtime will be obtained.
+        /// - Returns: Signal producer that returns the latest runtime.
+        public static func latest(platform: Platform) -> SignalProducer<Runtime?, SimulatorError> {
+            return Reactive.list()
+                .map({ $0.filter({ $0.platform == platform }) })
+                .map({ runtimes in runtimes.sorted(by: { $0.version < $1.version }) })
+                .map({ $0.last })
+        }
+
         /// Returns a signal producer that gets the list of runtimes from the system.
         ///
         /// - Returns: Signal producer that returns the list of runtimes.
