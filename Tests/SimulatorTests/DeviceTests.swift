@@ -1,4 +1,5 @@
 import Foundation
+import Result
 @testable import Simulator
 import XCTest
 
@@ -16,7 +17,7 @@ final class DeviceTests: XCTestCase {
     }
 
     func test_list_maps_the_devices() throws {
-        shell.stub("list", "-j", "devices", with: [
+        let output = [
             "devices": [
                 "iOS 12.1": [
                     [
@@ -29,8 +30,9 @@ final class DeviceTests: XCTestCase {
                     ],
                 ],
             ],
-        ])
-        let got = try Device.list(shell: shell)
+        ]
+        shell.stubSimctl(["list", "-j", "devices"], result: Result.success(output))
+        let got = Device.Reactive.list(shell: shell).single()?.value ?? []
         XCTAssertEqual(got.count, 1)
 
         XCTAssertEqual(got.first?.availability, "(unavailable, runtime profile not found)")

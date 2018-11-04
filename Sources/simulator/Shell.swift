@@ -1,12 +1,13 @@
 import Foundation
 import ReactiveSwift
 import ReactiveTask
+import Result
 
 /// Contains all the errors that are returned by the Shell signal producers.
 ///
 /// - taskError: Error returned by the underlying task run in the system.
 /// - nonUtf8Output: Thrown when an output expected to be of type utf8 has a different type.
-enum ShellError: Error {
+public enum ShellError: Error {
     case taskError(TaskError)
     case nonUtf8Output
 }
@@ -68,8 +69,8 @@ struct Shell: Shelling {
     /// - Parameter arguments: Arguments to be passed to simctl.
     /// - Returns: A signal producer that runs the simctl command.
     func simctl(_ arguments: [String]) -> SignalProducer<TaskEvent<Data>, ShellError> {
-        var arguments = ["simctl"]
-        arguments.append(contentsOf: arguments)
+        var arguments = arguments
+        arguments.insert("simctl", at: 0)
         return xcrun(arguments)
     }
 
@@ -97,7 +98,7 @@ struct Shell: Shelling {
                 guard let path: String = String(data: data, encoding: .utf8) else {
                     return SignalProducer(error: ShellError.nonUtf8Output)
                 }
-                return SignalProducer(value: path)
+                return SignalProducer(value: path.spm_chomp())
             })
     }
 

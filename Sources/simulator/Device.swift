@@ -1,7 +1,10 @@
 import Foundation
+import ReactiveSwift
+import ReactiveTask
+import Result
 
 /// Model that represents a device returned by simctl.
-public class Device: Decodable, Equatable {
+public struct Device: Decodable, Equatable {
     /// A string that summarizes the device availability.
     /// Example: (unavailable, runtime profile not found)
     public let availability: String
@@ -74,34 +77,10 @@ public class Device: Decodable, Equatable {
     /// - Returns: List of devices.
     /// - Throws: An error if the simctl command fails.
     public static func list() throws -> [Device] {
-        return try list(shell: Shell.shared)
-    }
-
-    // MARK: - Internal
-
-    /// Gets the list of devices from the system.
-    ///
-    /// - Parameter shell: Instance of shell to run the commands.
-    /// - Returns: List of devices.
-    /// - Throws: An error if the simctl command fails.
-    static func list(shell: Shelling) throws -> [Device] {
-        let data = try shell.simctl("list", "-j", "devices")
-        let decoder = JSONDecoder()
-
-        guard let dictionary = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-            let runtimes = dictionary["devices"] as? [String: [[String: Any]]] else {
-            return []
+        guard let devices = try Reactive.list().single()?.dematerialize() else {
+            throw SimulatorError.noOutput
         }
-
-        return try runtimes.reduce(into: [Device]()) { devices, runtimeAndDevices in
-            let (runtime, deviceDictionaries) = runtimeAndDevices
-            try deviceDictionaries.forEach { deviceDictionary in
-                var deviceDictionary = deviceDictionary
-                deviceDictionary["runtimeName"] = runtime
-                let deviceData = try JSONSerialization.data(withJSONObject: deviceDictionary, options: [])
-                devices.append(try decoder.decode(Device.self, from: deviceData))
-            }
-        }
+        return devices
     }
 
     // MARK: - Equatable
@@ -120,5 +99,57 @@ public class Device: Decodable, Equatable {
             lhs.udid == rhs.udid &&
             lhs.availabilityError == rhs.availabilityError &&
             lhs.runtimeName == rhs.runtimeName
+    }
+
+    // MARK: - Reactive
+
+    public struct Reactive {
+        /// Returns a signal producer that gets the list of devices from the system.
+        ///
+        /// - Returns: A signal producer that returns the devices.
+        public static func list() -> SignalProducer<[Device], SimulatorError> {
+            return list(shell: Shell.shared)
+        }
+
+        /// Returns a signal producer that gets the list of devices from the system.
+        ///
+        /// - Parameter shell: Shell instance to run the simctl commands.
+        /// - Returns: A signal producer that returns the devices.
+        static func list(shell: Shelling) -> SignalProducer<[Device], SimulatorError> {
+            let decoder = JSONDecoder()
+            return shell.simctl(["list", "-j", "devices"])
+                .ignoreTaskData()
+                .mapError({ SimulatorError.shell($0) })
+                .attemptMap({ (data) -> Result<Any, SimulatorError> in
+                    do {
+                        return try Result.success(JSONSerialization.jsonObject(with: data, options: []))
+                    } catch {
+                        return Result.failure(SimulatorError.jsonSerialize(error))
+                    }
+                })
+                .attemptMap({ (object) -> Result<[String: [[String: Any]]], SimulatorError> in
+                    guard let dictionary = object as? [String: Any],
+                        let runtimes = dictionary["devices"] as? [String: [[String: Any]]] else {
+                        return Result.failure(SimulatorError.invalidFormat)
+                    }
+                    return Result.success(runtimes)
+                })
+                .attemptMap { (runtimes) -> Result<[Device], SimulatorError> in
+                    do {
+                        let devices = try runtimes.reduce(into: [Device]()) { devices, runtimeAndDevices in
+                            let (runtime, deviceDictionaries) = runtimeAndDevices
+                            try deviceDictionaries.forEach { deviceDictionary in
+                                var deviceDictionary = deviceDictionary
+                                deviceDictionary["runtimeName"] = runtime
+                                let deviceData = try JSONSerialization.data(withJSONObject: deviceDictionary, options: [])
+                                devices.append(try decoder.decode(Device.self, from: deviceData))
+                            }
+                        }
+                        return Result.success(devices)
+                    } catch {
+                        return Result.failure(SimulatorError.jsonDecode(error))
+                    }
+                }
+        }
     }
 }
