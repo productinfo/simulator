@@ -100,6 +100,15 @@ public struct Device: Decodable, Equatable {
         try install(path, shell: Shell.shared)
     }
 
+    /// Uninstalls the given app from the device.
+    ///
+    /// - Parameters:
+    ///   - bundleIdentifier: The app bundle identifier.
+    /// - Throws: An error if the app cannot be uninstalled
+    func uninstall(_ bundleIdentifier: String) throws {
+        try uninstall(bundleIdentifier, shell: Shell.shared)
+    }
+
     /// Erases the device content.
     ///
     /// - Throws: An error if the device cannot be erased.
@@ -298,6 +307,16 @@ public struct Device: Decodable, Equatable {
     /// - Throws: An error if the app cannot be installed
     func install(_ path: URL, shell: Shelling) throws {
         _ = try shell.simctl(["install", udid, path.path]).ignoreTaskData().single()?.dematerialize()
+    }
+
+    /// Uninstalls the given app from the device.
+    ///
+    /// - Parameters:
+    ///   - bundleIdentifier: The app bundle identifier.
+    ///   - shell: Shell instance to run the commands on.
+    /// - Throws: An error if the app cannot be uninstalled
+    func uninstall(_ bundleIdentifier: String, shell: Shelling) throws {
+        _ = try shell.simctl(["uninstall", udid, bundleIdentifier]).ignoreTaskData().single()?.dematerialize()
     }
 
     /// Erases the device content.
