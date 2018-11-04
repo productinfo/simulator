@@ -83,6 +83,33 @@ public struct Device: Decodable, Equatable {
         return devices
     }
 
+    // MARK: - Paths
+
+    public func globalPreferencesPlistPath() -> URL {
+        return homePath().appendingPathComponent("data/Library/Preferences/.GlobalPreferences.plist")
+    }
+
+    public func devicePlistPath() -> URL {
+        return homePath().appendingPathComponent("device.plist")
+    }
+
+    public func homePath() -> URL {
+        return Device.devicesPath().appendingPathComponent(udid)
+    }
+
+//    public func launchCtlPath() -> URL {
+//        return self.runtimePath().appendingPathComponent("bin/launchctl")
+//    }
+
+//    public func runtimePath() -> URL {
+//
+//    }
+
+    static func devicesPath() -> URL {
+        let homeDirectory = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
+        return homeDirectory.appendingPathComponent("Library/Developer/CoreSimulator/Devices")
+    }
+
     // MARK: - Equatable
 
     /// Compares two devices returning true if both devices are the same.

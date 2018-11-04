@@ -7,9 +7,19 @@ import Result
 ///
 /// - taskError: Error returned by the underlying task run in the system.
 /// - nonUtf8Output: Thrown when an output expected to be of type utf8 has a different type.
-public enum ShellError: Error {
+public enum ShellError: Error, CustomStringConvertible {
     case taskError(TaskError)
     case nonUtf8Output
+
+    /// Error description.
+    public var description: String {
+        switch self {
+        case let .taskError(error):
+            return "Error running task: \(error)"
+        case .nonUtf8Output:
+            return "Expected output to have a valid utf8 format but got a different format."
+        }
+    }
 }
 
 /// Protocol that defines the interface of an entity that runs shell commands.
@@ -47,6 +57,11 @@ protocol Shelling {
     ///   - arguments: List of arguments to be passed to the command.
     /// - Returns: A signal producer that triggers the command when subscribers subscribe to it.
     func run(launchPath: String, arguments: [String]) -> SignalProducer<TaskEvent<Data>, ShellError>
+
+    /// It returns a signal producer that gets the Xcode path using xcode-select.
+    ///
+    /// - Returns: Signal producer that gets the Xcode path.
+    func xcodePath() -> SignalProducer<String, ShellError>
 }
 
 /// Struct that conforms the Shelling providing a default implementation.
@@ -110,6 +125,20 @@ struct Shell: Shelling {
     /// - Returns: A signal producer that triggers the command when subscribers subscribe to it.
     func run(launchPath: String, arguments: [String]) -> SignalProducer<TaskEvent<Data>, ShellError> {
         return Task(launchPath, arguments: arguments).launch().mapError({ ShellError.taskError($0) })
+    }
+
+    /// It returns a signal producer that gets the Xcode path using xcode-select.
+    ///
+    /// - Returns: Signal producer that gets the Xcode path.
+    func xcodePath() -> SignalProducer<String, ShellError> {
+        return run(launchPath: "/usr/bin/xcode-select", arguments: ["-p"])
+            .ignoreTaskData()
+            .flatMap(.latest, { (data: Data) -> SignalProducer<String, ShellError> in
+                guard let path: String = String(data: data, encoding: .utf8) else {
+                    return SignalProducer(error: ShellError.nonUtf8Output)
+                }
+                return SignalProducer(value: path.spm_chomp())
+            })
     }
 
     // MARK: - Fileprivate

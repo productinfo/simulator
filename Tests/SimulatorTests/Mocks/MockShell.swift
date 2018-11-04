@@ -10,6 +10,7 @@ final class MockShell: Shelling {
     var xcrunStub: (([String]) -> Result<TaskEvent<Data>, ShellError>)?
     var whichStub: ((String) -> Result<String, ShellError>)?
     var runStub: ((String, [String]) -> Result<TaskEvent<Data>, ShellError>)?
+    var xcodePathStub: (() -> Result<String, ShellError>)?
 
     func stubSimctl(_ arguments: [String], result: Result<Any, ShellError>) {
         simctlStub = { _arguments in
@@ -20,6 +21,14 @@ final class MockShell: Shelling {
             } else {
                 return Result.failure(ShellError.taskError(TaskError.posixError(1)))
             }
+        }
+    }
+
+    func xcodePath() -> SignalProducer<String, ShellError> {
+        if let result = xcodePathStub?() {
+            return SignalProducer(result: result)
+        } else {
+            return SignalProducer(error: ShellError.taskError(TaskError.posixError(1)))
         }
     }
 
