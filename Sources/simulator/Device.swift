@@ -83,32 +83,100 @@ public struct Device: Decodable, Equatable {
         return devices
     }
 
-    // MARK: - Paths
+    /// Returns the type of device reading the value from the device plist file.
+    ///
+    /// - Returns: Device type.
+    /// - Throws: Throws a DeviceError.deviceTypeNotFound if the device plist can't be read, the deviceType attribute is missing or it has the wrong type.
+    public func deviceType() throws -> String {
+        guard let deviceType = try plist()["deviceType"] as? String else {
+            throw SimulatorError.deviceTypeNotFound
+        }
+        return deviceType
+    }
 
+    /// Returns the device runtime identifier.
+    ///
+    /// - Returns: Device runtime identifier.
+    /// - Throws: An error if the device plist cannot be opened or the runtime identifier is missing.
+    public func runtimeIdentifier() throws -> String {
+        guard let deviceType = try plist()["runtime"] as? String else {
+            throw SimulatorError.runtimeNotFound
+        }
+        return deviceType
+    }
+
+    /// Returns the device global preferences.
+    ///
+    /// - Returns: Device global preferences.
+    /// - Throws: If the file cannot be read or has an invalid format.
+    public func globalPreferences() throws -> [String: Any] {
+        let data = try Data(contentsOf: globalPreferencesPlistPath())
+        return try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as! [String: Any]
+    }
+
+    /// Returns the  device device.plist content.
+    ///
+    /// - Returns: Device.plist content.
+    /// - Throws: An error if the file cannot be read or has an invalid format.
+    public func plist() throws -> [String: Any] {
+        let data = try Data(contentsOf: devicePlistPath())
+        let plist = try PropertyListSerialization.propertyList(from: data,
+                                                               options: [],
+                                                               format: nil) as! [String: Any]
+        return plist
+    }
+
+    /// Returns the device runtime.
+    ///
+    /// - Returns: Device runtime.
+    /// - Throws: A SimulatorError if the runtime cannot be obtained.
+    public func runtime() throws -> Runtime {
+        let runtimeIdentifier = try self.runtimeIdentifier()
+        guard let runtime = try Runtime.list().first(where: { $0.identifier == runtimeIdentifier }) else {
+            throw SimulatorError.runtimeNotFound
+        }
+        return runtime
+    }
+
+    /// Return the path to the global preferences plist fine.
+    ///
+    /// - Returns: Path to the global preferences plist file.
     public func globalPreferencesPlistPath() -> URL {
         return homePath().appendingPathComponent("data/Library/Preferences/.GlobalPreferences.plist")
     }
 
+    /// Returns the path to the device device.plist file.
+    ///
+    /// - Returns: Path to the device.plist file.
     public func devicePlistPath() -> URL {
         return homePath().appendingPathComponent("device.plist")
     }
 
+    /// Returns the device home directory.
+    ///
+    /// - Returns: Path to the device home directory.
     public func homePath() -> URL {
         return Device.devicesPath().appendingPathComponent(udid)
     }
-
-//    public func launchCtlPath() -> URL {
-//        return self.runtimePath().appendingPathComponent("bin/launchctl")
-//    }
-
-//    public func runtimePath() -> URL {
-//
-//    }
 
     static func devicesPath() -> URL {
         let homeDirectory = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
         return homeDirectory.appendingPathComponent("Library/Developer/CoreSimulator/Devices")
     }
+
+//
+//    public func runtimePath() -> URL {
+//
+//    }
+//
+
+//    public func launchCtlPath() -> URL {
+//        return self.runtimePath().appendingPathComponent("bin/launchctl")
+//    }
+//
+//    public func runtimePath() -> URL {
+//
+//    }
 
     // MARK: - Equatable
 
