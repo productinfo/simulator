@@ -8,6 +8,12 @@ protocol Xcoding {
     ///   - platform: Platform whose simulator SDK path will be returned
     /// - Returns: Signal producer that returns the path where the platform simulator SDK is located.
     func simulatorSDKPath(platform: Runtime.Platform) -> SignalProducer<URL?, ShellError>
+
+    /// Returns a signal producer that returns the path where the platform simulator runtimes are located.
+    ///
+    /// - Parameter platform: Platform whose runtime profiles will be returned.
+    /// - Returns: Signal producer that returns the path.
+    func runtimeProfilesPath(platform: Runtime.Platform) -> SignalProducer<URL?, ShellError>
 }
 
 /// Struct that provides some helper methods to read information from the Xcode environment.

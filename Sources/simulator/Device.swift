@@ -159,24 +159,95 @@ public struct Device: Decodable, Equatable {
         return Device.devicesPath().appendingPathComponent(udid)
     }
 
+    /// Returns the runtime path.
+    ///
+    /// - Returns: Runtime path.
+    /// - Throws: An error if the path cannot be obtained.
+    public func runtimePath() throws -> URL {
+        return try runtimePath(xcode: Xcode())
+    }
+
+    /// Returns the path to the runtime launchctl binary.
+    ///
+    /// - Returns: Path to the launchctl binary.
+    /// - Throws: An error if it can't be found.
+    public func launchCtlPath() throws -> URL {
+        return try runtimePath().appendingPathComponent("bin/launchctl")
+    }
+
+    public func services() throws -> [Service] {
+        return try services(shell: Shell.shared)
+    }
+
+    func services(shell: Shelling) throws -> [Service] {
+        guard let data = try shell.run(launchPath: try self.launchCtlPath().path, arguments: ["list"])
+            .ignoreTaskData()
+            .single()?.dematerialize() else {
+            return []
+        }
+        guard let output = String(data: data, encoding: .utf8) else {
+            throw ShellError.nonUtf8Output
+        }
+        return try output.split(separator: "\n")
+            .dropFirst()
+            .compactMap({ (line) -> Service? in
+                let components = line.split(separator: "\t")
+                if components.count != 3 { throw SimulatorError.invalidLaunchCtlListOutput }
+                let pid = String(components[0])
+                let status = Int(components[1])!
+                let label = String(components[2])
+                return Service(pid: pid, status: status, label: label)
+            })
+    }
+
+    /// Returns the runtime path.
+    ///
+    /// - Parameter xcode: Xcode instance to read Xcode variables.
+    /// - Returns: Runtime path.
+    /// - Throws: An error if the path cannot be obtained.
+    func runtimePath(xcode: Xcoding) throws -> URL {
+        let fileManager = FileManager.default
+        let runtimeIdentifier = try self.runtimeIdentifier()
+
+        // We check the runtimes in the Xcode profiles directory and the developer CoreSimulator folder
+        var pathsToCheck: [URL] = []
+        if let path = try xcode.runtimeProfilesPath(platform: self.runtime().platform).single()?.dematerialize() {
+            pathsToCheck.append(path)
+        }
+        pathsToCheck.append(URL(fileURLWithPath: "/Library/Developer/CoreSimulator/Profiles/Runtimes/"))
+        let paths = try pathsToCheck.flatMap { try fileManager.contentsOfDirectory(at: $0, includingPropertiesForKeys: nil, options: []) }
+
+        // We check that the the runtime bundle identifier matches the device runtime id.
+        for path in paths {
+            let plistPath = path.appendingPathComponent("Contents/Info.plist")
+            if !fileManager.fileExists(atPath: plistPath.path) {
+                continue
+            }
+            let plistData = try Data(contentsOf: plistPath)
+            guard let plist = try PropertyListSerialization.propertyList(from: plistData,
+                                                                         options: [],
+                                                                         format: nil) as? [String: Any],
+                let bundleIdentifier = plist["CFBundleIdentifier"] as? String else {
+                continue
+            }
+            if bundleIdentifier != runtimeIdentifier {
+                continue
+            }
+            let rootPath = path.appendingPathComponent("Contents/Resources/RuntimeRoot")
+            if fileManager.fileExists(atPath: rootPath.path) {
+                return rootPath
+            }
+        }
+        throw SimulatorError.runtimeProfileNotFound
+    }
+
+    /// It returns the system directory where all the devices are stored.
+    ///
+    /// - Returns: Path to the directory that contains all the devices.
     static func devicesPath() -> URL {
         let homeDirectory = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
         return homeDirectory.appendingPathComponent("Library/Developer/CoreSimulator/Devices")
     }
-
-//
-//    public func runtimePath() -> URL {
-//
-//    }
-//
-
-//    public func launchCtlPath() -> URL {
-//        return self.runtimePath().appendingPathComponent("bin/launchctl")
-//    }
-//
-//    public func runtimePath() -> URL {
-//
-//    }
 
     // MARK: - Equatable
 

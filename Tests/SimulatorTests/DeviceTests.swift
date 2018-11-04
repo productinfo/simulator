@@ -35,9 +35,28 @@ final class DeviceTests: XCTestCase {
         XCTAssertTrue(plist.keys.contains("state"))
     }
 
+    func test_runtimePath() throws {
+        let device = try iPhoneDevice()
+        XCTAssertNoThrow(try device.runtimePath())
+    }
+
+    func test_launchCtlPath() throws {
+        let device = try iPhoneDevice()
+        let path = try device.launchCtlPath()
+        XCTAssertTrue(FileManager.default.fileExists(atPath: path.path))
+    }
+
     func test_runtime() throws {
         let device = try iPhoneDevice()
         XCTAssertNoThrow(try device.runtime())
+    }
+
+    func test_services() throws {
+        let device = try iPhoneDevice()
+        let services = try device.services()
+        try print(device.runtimePath())
+        XCTAssertTrue(services.contains(where: { $0.label == "com.apple.storeagent.daemon" }))
+        XCTAssertNotEqual(services.count, 0)
     }
 
     func test_globalPreferencesPlistPath() throws {
