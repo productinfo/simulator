@@ -91,6 +91,15 @@ public struct Device: Decodable, Equatable {
         return try kill(shell: Shell.shared)
     }
 
+    /// Installs the given app on the device.
+    ///
+    /// - Parameters:
+    ///   - path: Path to the app bundle (with .app extension)
+    /// - Throws: An error if the app cannot be installed
+    public func install(_ path: URL) throws {
+        install(path, shell: Shell.shared)
+    }
+
     /// Returns the type of device reading the value from the device plist file.
     ///
     /// - Returns: Device type.
@@ -267,11 +276,21 @@ public struct Device: Decodable, Equatable {
             return false
         }
         do {
-            try shell.run(launchPath: "/bin/kill", arguments: ["\(pid)"]).ignoreTaskData().single()?.dematerialize()
+            _ = try shell.run(launchPath: "/bin/kill", arguments: ["\(pid)"]).ignoreTaskData().single()?.dematerialize()
             return true
         } catch {
             return false
         }
+    }
+
+    /// Installs the given app on the device.
+    ///
+    /// - Parameters:
+    ///   - path: Path to the app bundle (with .app extension)
+    ///   - shell: Shell instance to run the commands on.
+    /// - Throws: An error if the app cannot be installed
+    func install(_ path: URL, shell: Shelling) throws {
+        _ = try shell.simctl(["install", udid, path.path]).ignoreTaskData().single()?.dematerialize()
     }
 
     // MARK: - Static

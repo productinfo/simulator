@@ -27,7 +27,6 @@ final class DeviceTests: XCTestCase {
     func test_plist() throws {
         let device = try iPhoneDevice()
         let plist = try device.plist()
-        print(plist)
         XCTAssertTrue(plist.keys.contains("deviceType"))
         XCTAssertTrue(plist.keys.contains("runtime"))
         XCTAssertTrue(plist.keys.contains("UDID"))
