@@ -83,6 +83,14 @@ public struct Device: Decodable, Equatable {
         return devices
     }
 
+    /// Kills the device. It findes the process associated to it and kills it.
+    ///
+    /// - Returns: True if the device was killed.
+    /// - Throws: An error if any of the underlying commands fails.
+    public func kill() throws -> Bool {
+        return try kill(shell: Shell.shared)
+    }
+
     /// Returns the type of device reading the value from the device plist file.
     ///
     /// - Returns: Device type.
@@ -179,6 +187,8 @@ public struct Device: Decodable, Equatable {
         return try services(shell: Shell.shared)
     }
 
+    // MARK: - Internal
+
     func services(shell: Shelling) throws -> [Service] {
         guard let data = try shell.run(launchPath: try self.launchCtlPath().path, arguments: ["list"])
             .ignoreTaskData()
@@ -240,6 +250,31 @@ public struct Device: Decodable, Equatable {
         }
         throw SimulatorError.runtimeProfileNotFound
     }
+
+    /// Kills a running device.
+    ///
+    /// - Parameter shell: Shell used to run system commands.
+    /// - Returns: False if the device was not killed.
+    /// - Throws: An error if any of the underlying commands fails.
+    @discardableResult
+    func kill(shell: Shelling) throws -> Bool {
+        let argument = "xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
+        guard let data = try shell.run(launchPath: "/bin/ps", arguments: [argument])
+            .ignoreTaskData()
+            .single()?.dematerialize(),
+            let output = String(data: data, encoding: .utf8)?.spm_chomp(),
+            let pid: Int = Int(output) else {
+            return false
+        }
+        do {
+            try shell.run(launchPath: "/bin/kill", arguments: ["\(pid)"]).ignoreTaskData().single()?.dematerialize()
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    // MARK: - Static
 
     /// It returns the system directory where all the devices are stored.
     ///
