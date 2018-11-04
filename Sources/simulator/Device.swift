@@ -97,7 +97,14 @@ public struct Device: Decodable, Equatable {
     ///   - path: Path to the app bundle (with .app extension)
     /// - Throws: An error if the app cannot be installed
     public func install(_ path: URL) throws {
-        install(path, shell: Shell.shared)
+        try install(path, shell: Shell.shared)
+    }
+
+    /// Erases the device content.
+    ///
+    /// - Throws: An error if the device cannot be erased.
+    func erase() throws {
+        try erase(shell: Shell.shared)
     }
 
     /// Returns the type of device reading the value from the device plist file.
@@ -291,6 +298,15 @@ public struct Device: Decodable, Equatable {
     /// - Throws: An error if the app cannot be installed
     func install(_ path: URL, shell: Shelling) throws {
         _ = try shell.simctl(["install", udid, path.path]).ignoreTaskData().single()?.dematerialize()
+    }
+
+    /// Erases the device content.
+    ///
+    /// - Parameters:
+    ///   - shell: Shell instance to run the commands on.
+    /// - Throws: An error if the device cannot be erased.
+    func erase(shell: Shelling) throws {
+        _ = try shell.simctl(["erase", udid]).ignoreTaskData().single()?.dematerialize()
     }
 
     // MARK: - Static
