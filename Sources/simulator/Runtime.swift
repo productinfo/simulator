@@ -1,7 +1,5 @@
 import Foundation
-import ReactiveSwift
-import ReactiveTask
-import Result
+import SwiftShell
 
 /// This class represents a simctl runtime. In Xcode, a runtime is a pair of an OS and its version, for example iOS 12.1
 public struct Runtime: Decodable, Equatable {
@@ -88,70 +86,31 @@ public struct Runtime: Decodable, Equatable {
     /// - Returns: List of runtimes.
     /// - Throws: A SimulatorError if the runtimes cannot be fetched.
     public static func list() throws -> [Runtime] {
-        return try Reactive.list().single()?.dematerialize() ?? []
+        let decoder = JSONDecoder()
+        let output = try Shell.shared.simctl(["list", "-j", "runtimes"])
+        if let error = output.error {
+            throw error
+        }
+        let data = output.stdout.data(using: .utf8) ?? Data()
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        guard let dictionary = json as? [String: Any],
+            let runtimes = dictionary["runtimes"] as? [[String: Any]] else {
+            throw SimulatorError.invalidFormat
+        }
+        let runtimesData = try JSONSerialization.data(withJSONObject: runtimes, options: [])
+        return try decoder.decode([Runtime].self, from: runtimesData)
     }
 
-    /// Returns a signal producer that returns the latest runtime of a given platform.
-    /// This is useful, for example, to get the latest determine the latest available runtime we can run our tests on.
+    /// Returns the latest runtime of a given platform.
+    /// This is useful, for example, to determine the latest available runtime we can run our tests on.
     ///
     /// - Parameter platform: Platform whose latest runtime will be obtained.
-    /// - Returns: Signal producer that returns the latest runtime.
-    /// - Throws: A SimulatorError if the latest runtime cannot be obtained
+    /// - Returns: Latest available runtime.
+    /// - Throws: An error if the list of runtimes cannot be obtained.
     public static func latest(platform: Platform) throws -> Runtime? {
-        return try Reactive.latest(platform: platform).single()?.dematerialize()
-    }
-
-    public enum Reactive {
-        /// Returns a signal producer that returns the latest runtime of a given platform.
-        /// This is useful, for example, to get the latest determine the latest available runtime we can run our tests on.
-        ///
-        /// - Parameter platform: Platform whose latest runtime will be obtained.
-        /// - Returns: Signal producer that returns the latest runtime.
-        public static func latest(platform: Platform) -> SignalProducer<Runtime?, SimulatorError> {
-            return Reactive.list()
-                .map({ $0.filter({ $0.platform == platform }) })
-                .map({ runtimes in runtimes.sorted(by: { $0.version < $1.version }) })
-                .map({ $0.last })
-        }
-
-        /// Returns a signal producer that gets the list of runtimes from the system.
-        ///
-        /// - Returns: Signal producer that returns the list of runtimes.
-        public static func list() -> SignalProducer<[Runtime], SimulatorError> {
-            return list(shell: Shell.shared)
-        }
-
-        /// Returns a signal producer that gets the list of runtimes from the system.
-        ///
-        /// - Parameter shell: Shell to run simctl commands.
-        /// - Returns: Signal producer that returns the list of runtimes.
-        static func list(shell: Shelling) -> SignalProducer<[Runtime], SimulatorError> {
-            let decoder = JSONDecoder()
-            return shell.simctl(["list", "-j", "runtimes"])
-                .ignoreTaskData()
-                .mapError({ SimulatorError.shell($0) })
-                .attemptMap({ (data) -> Result<Any, SimulatorError> in
-                    do {
-                        return try Result.success(JSONSerialization.jsonObject(with: data, options: []))
-                    } catch {
-                        return Result.failure(SimulatorError.jsonSerialize(error))
-                    }
-                })
-                .attemptMap({ (object) -> Result<[[String: Any]], SimulatorError> in
-                    guard let dictionary = object as? [String: Any],
-                        let runtimes = dictionary["runtimes"] as? [[String: Any]] else {
-                        return Result.failure(SimulatorError.invalidFormat)
-                    }
-                    return Result.success(runtimes)
-                })
-                .attemptMap { (runtimes) -> Result<[Runtime], SimulatorError> in
-                    do {
-                        let runtimesData = try JSONSerialization.data(withJSONObject: runtimes, options: [])
-                        return Result.success(try decoder.decode([Runtime].self, from: runtimesData))
-                    } catch {
-                        return Result.failure(SimulatorError.jsonDecode(error))
-                    }
-                }
-        }
+        return try list()
+            .filter({ $0.platform == platform })
+            .sorted(by: { $0.version < $1.version })
+            .last
     }
 }

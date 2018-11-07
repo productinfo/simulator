@@ -11,8 +11,7 @@ final class ShellTests: XCTestCase {
     }
 
     func test_simctl() throws {
-        let data = subject.simctl(["help"]).ignoreTaskData().single()?.value ?? Data()
-        let output = String(data: data, encoding: .utf8) ?? ""
+        let output = try subject.simctl(["help"]).stdout
         XCTAssertTrue(output.contains("Command line utility to control the Simulator"))
     }
 }
