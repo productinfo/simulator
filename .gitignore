@@ -86,7 +86,7 @@ fastlane/test_output
 
 # End of https://www.gitignore.io/api/swift,macos
 
-*.xcodeproj
+Simulator.xcodeproj
 .byebug_history
 *.xcarchive
 tmp/
@@ -95,5 +95,6 @@ build/
 .env
 .idea/
 Carthage/Checkouts
+Carthage/Builds
 *.profraw
 TODO
