@@ -1,4 +1,5 @@
 import Foundation
+import SwiftShell
 
 /// Simulator errors.
 ///
@@ -13,7 +14,6 @@ import Foundation
 /// - invalidLaunchCtlListOutput: Thrown when the output from the launchtl list command cannot be parsed.
 public enum SimulatorError: Error {
     case noOutput
-    case shell(ShellError)
     case jsonSerialize(Error)
     case jsonDecode(Error)
     case invalidFormat

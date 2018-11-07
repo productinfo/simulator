@@ -1,74 +1,37 @@
 import Foundation
-import ReactiveSwift
-import ReactiveTask
-import Result
+
 @testable import Simulator
+@testable import SwiftShell
 
 final class MockShell: Shelling {
-    var openStub: (([String]) -> Result<Void, ShellError>)?
-    var simctlStub: (([String]) -> Result<TaskEvent<Data>, ShellError>)?
-    var xcrunStub: (([String]) -> Result<TaskEvent<Data>, ShellError>)?
-    var whichStub: ((String) -> Result<String, ShellError>)?
-    var runStub: ((String, [String]) -> Result<TaskEvent<Data>, ShellError>)?
-    var xcodePathStub: (() -> Result<String, ShellError>)?
+    var openStub: (([String]) throws -> Void)?
+    var simctlStub: (([String]) throws -> ShellOutput)?
+    var xcrunStub: (([String]) throws -> ShellOutput)?
+    var whichStub: ((String) throws -> String)?
+    var runStub: ((String, [String]) -> ShellOutput)?
+    var xcodePathStub: (() throws -> String)?
 
-    func stubSimctl(_ arguments: [String], result: Result<Any, ShellError>) {
-        simctlStub = { _arguments in
-            if arguments == _arguments {
-                return result.map({ (json) -> TaskEvent<Data> in
-                    TaskEvent.success(try! JSONSerialization.data(withJSONObject: json, options: []))
-                })
-            } else {
-                return Result.failure(ShellError.taskError(TaskError.posixError(1)))
-            }
-        }
+    func open(_ arguments: [String]) throws {
+        try openStub?(arguments)
     }
 
-    func xcodePath() -> SignalProducer<String, ShellError> {
-        if let result = xcodePathStub?() {
-            return SignalProducer(result: result)
-        } else {
-            return SignalProducer(error: ShellError.taskError(TaskError.posixError(1)))
-        }
+    func simctl(_ arguments: [String]) throws -> ShellOutput {
+        return try simctlStub?(arguments) ?? ShellOutput()
     }
 
-    func open(_ arguments: [String]) -> SignalProducer<Void, ShellError> {
-        if let result = openStub?(arguments) {
-            return SignalProducer(result: result)
-        } else {
-            return SignalProducer(value: ())
-        }
+    func xcrun(_ arguments: [String]) throws -> ShellOutput {
+        return try xcrunStub?(arguments) ?? ShellOutput()
     }
 
-    func simctl(_ arguments: [String]) -> SignalProducer<TaskEvent<Data>, ShellError> {
-        if let result = simctlStub?(arguments) {
-            return SignalProducer(result: result)
-        } else {
-            return SignalProducer(error: ShellError.taskError(TaskError.posixError(1)))
-        }
+    func which(_ name: String) throws -> String {
+        return try whichStub?(name) ?? ""
     }
 
-    func xcrun(_ arguments: [String]) -> SignalProducer<TaskEvent<Data>, ShellError> {
-        if let result = xcrunStub?(arguments) {
-            return SignalProducer(result: result)
-        } else {
-            return SignalProducer(error: ShellError.taskError(TaskError.posixError(1)))
-        }
+    func run(launchPath: String, arguments: [String]) -> ShellOutput {
+        return runStub?(launchPath, arguments) ?? ShellOutput()
     }
 
-    func which(_ name: String) -> SignalProducer<String, ShellError> {
-        if let result = whichStub?(name) {
-            return SignalProducer(result: result)
-        } else {
-            return SignalProducer(error: ShellError.taskError(TaskError.posixError(1)))
-        }
-    }
-
-    func run(launchPath: String, arguments: [String]) -> SignalProducer<TaskEvent<Data>, ShellError> {
-        if let result = runStub?(launchPath, arguments) {
-            return SignalProducer(result: result)
-        } else {
-            return SignalProducer(error: ShellError.taskError(TaskError.posixError(1)))
-        }
+    func xcodePath() throws -> String {
+        return try xcodePathStub?() ?? ""
     }
 }

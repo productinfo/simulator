@@ -1,7 +1,4 @@
 import Foundation
-import ReactiveSwift
-import ReactiveTask
-import Result
 
 /// Model that represents a device returned by simctl.
 public struct Device: Decodable, Equatable {
@@ -77,8 +74,25 @@ public struct Device: Decodable, Equatable {
     /// - Returns: List of devices.
     /// - Throws: An error if the simctl command fails.
     public static func list() throws -> [Device] {
-        guard let devices = try Reactive.list().single()?.dematerialize() else {
-            throw SimulatorError.noOutput
+        let decoder = JSONDecoder()
+        let output = try Shell.shared.simctl(["list", "-j", "devices"])
+        if let error = output.error {
+            throw error
+        }
+        let data = output.stdout.data(using: .utf8) ?? Data()
+        let json = try JSONSerialization.jsonObject(with: data, options: [])
+        guard let dictionary = json as? [String: Any],
+            let runtimes = dictionary["devices"] as? [String: [[String: Any]]] else {
+            throw SimulatorError.invalidFormat
+        }
+        let devices = try runtimes.reduce(into: [Device]()) { devices, runtimeAndDevices in
+            let (runtime, deviceDictionaries) = runtimeAndDevices
+            try deviceDictionaries.forEach { deviceDictionary in
+                var deviceDictionary = deviceDictionary
+                deviceDictionary["runtimeName"] = runtime
+                let deviceData = try JSONSerialization.data(withJSONObject: deviceDictionary, options: [])
+                devices.append(try decoder.decode(Device.self, from: deviceData))
+            }
         }
         return devices
     }
@@ -88,7 +102,16 @@ public struct Device: Decodable, Equatable {
     /// - Returns: True if the device was killed.
     /// - Throws: An error if any of the underlying commands fails.
     public func kill() throws -> Bool {
-        return try kill(shell: Shell.shared)
+        let argument = "xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
+        let output = Shell.shared.run(launchPath: "/bin/ps", arguments: [argument])
+        if let error = output.error {
+            throw error
+        }
+        guard let pid = Int(output.stdout.spm_chomp()) else {
+            return false
+        }
+        let killOutput = Shell.shared.run(launchPath: "/bin/kill", arguments: ["\(pid)"])
+        return killOutput.exitcode == 0
     }
 
     /// Installs the given app on the device.
@@ -97,7 +120,10 @@ public struct Device: Decodable, Equatable {
     ///   - path: Path to the app bundle (with .app extension)
     /// - Throws: An error if the app cannot be installed
     public func install(_ path: URL) throws {
-        try install(path, shell: Shell.shared)
+        let output = try Shell.shared.simctl(["install", udid, path.path])
+        if let error = output.error {
+            throw error
+        }
     }
 
     /// Uninstalls the given app from the device.
@@ -106,14 +132,20 @@ public struct Device: Decodable, Equatable {
     ///   - bundleIdentifier: The app bundle identifier.
     /// - Throws: An error if the app cannot be uninstalled
     func uninstall(_ bundleIdentifier: String) throws {
-        try uninstall(bundleIdentifier, shell: Shell.shared)
+        let output = try Shell.shared.simctl(["uninstall", udid, bundleIdentifier])
+        if let error = output.error {
+            throw error
+        }
     }
 
     /// Erases the device content.
     ///
     /// - Throws: An error if the device cannot be erased.
     func erase() throws {
-        try erase(shell: Shell.shared)
+        let output = try Shell.shared.simctl(["erase", udid])
+        if let error = output.error {
+            throw error
+        }
     }
 
     /// Returns the type of device reading the value from the device plist file.
@@ -208,22 +240,16 @@ public struct Device: Decodable, Equatable {
         return try runtimePath().appendingPathComponent("bin/launchctl")
     }
 
+    /// Returns all the services that are available on this device.
+    ///
+    /// - Returns: List of services.
+    /// - Throws: An error if the launchctl path cannot be obatined or the output is invalid.
     public func services() throws -> [Service] {
-        return try services(shell: Shell.shared)
-    }
-
-    // MARK: - Internal
-
-    func services(shell: Shelling) throws -> [Service] {
-        guard let data = try shell.run(launchPath: try self.launchCtlPath().path, arguments: ["list"])
-            .ignoreTaskData()
-            .single()?.dematerialize() else {
-            return []
+        let output = Shell.shared.run(launchPath: try launchCtlPath().path, arguments: ["list"])
+        if let error = output.error {
+            throw error
         }
-        guard let output = String(data: data, encoding: .utf8) else {
-            throw ShellError.nonUtf8Output
-        }
-        return try output.split(separator: "\n")
+        return try output.stdout.split(separator: "\n")
             .dropFirst()
             .compactMap({ (line) -> Service? in
                 let components = line.split(separator: "\t")
@@ -234,6 +260,8 @@ public struct Device: Decodable, Equatable {
                 return Service(pid: pid, status: status, label: label)
             })
     }
+
+    // MARK: - Internal
 
     /// Returns the runtime path.
     ///
@@ -246,7 +274,8 @@ public struct Device: Decodable, Equatable {
 
         // We check the runtimes in the Xcode profiles directory and the developer CoreSimulator folder
         var pathsToCheck: [URL] = []
-        if let path = try xcode.runtimeProfilesPath(platform: self.runtime().platform).single()?.dematerialize() {
+
+        if let path = try xcode.runtimeProfilesPath(platform: self.runtime().platform) {
             pathsToCheck.append(path)
         }
         pathsToCheck.append(URL(fileURLWithPath: "/Library/Developer/CoreSimulator/Profiles/Runtimes/"))
@@ -276,58 +305,6 @@ public struct Device: Decodable, Equatable {
         throw SimulatorError.runtimeProfileNotFound
     }
 
-    /// Kills a running device.
-    ///
-    /// - Parameter shell: Shell used to run system commands.
-    /// - Returns: False if the device was not killed.
-    /// - Throws: An error if any of the underlying commands fails.
-    @discardableResult
-    func kill(shell: Shelling) throws -> Bool {
-        let argument = "xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
-        guard let data = try shell.run(launchPath: "/bin/ps", arguments: [argument])
-            .ignoreTaskData()
-            .single()?.dematerialize(),
-            let output = String(data: data, encoding: .utf8)?.spm_chomp(),
-            let pid: Int = Int(output) else {
-            return false
-        }
-        do {
-            _ = try shell.run(launchPath: "/bin/kill", arguments: ["\(pid)"]).ignoreTaskData().single()?.dematerialize()
-            return true
-        } catch {
-            return false
-        }
-    }
-
-    /// Installs the given app on the device.
-    ///
-    /// - Parameters:
-    ///   - path: Path to the app bundle (with .app extension)
-    ///   - shell: Shell instance to run the commands on.
-    /// - Throws: An error if the app cannot be installed
-    func install(_ path: URL, shell: Shelling) throws {
-        _ = try shell.simctl(["install", udid, path.path]).ignoreTaskData().single()?.dematerialize()
-    }
-
-    /// Uninstalls the given app from the device.
-    ///
-    /// - Parameters:
-    ///   - bundleIdentifier: The app bundle identifier.
-    ///   - shell: Shell instance to run the commands on.
-    /// - Throws: An error if the app cannot be uninstalled
-    func uninstall(_ bundleIdentifier: String, shell: Shelling) throws {
-        _ = try shell.simctl(["uninstall", udid, bundleIdentifier]).ignoreTaskData().single()?.dematerialize()
-    }
-
-    /// Erases the device content.
-    ///
-    /// - Parameters:
-    ///   - shell: Shell instance to run the commands on.
-    /// - Throws: An error if the device cannot be erased.
-    func erase(shell: Shelling) throws {
-        _ = try shell.simctl(["erase", udid]).ignoreTaskData().single()?.dematerialize()
-    }
-
     // MARK: - Static
 
     /// It returns the system directory where all the devices are stored.
@@ -354,57 +331,5 @@ public struct Device: Decodable, Equatable {
             lhs.udid == rhs.udid &&
             lhs.availabilityError == rhs.availabilityError &&
             lhs.runtimeName == rhs.runtimeName
-    }
-
-    // MARK: - Reactive
-
-    public struct Reactive {
-        /// Returns a signal producer that gets the list of devices from the system.
-        ///
-        /// - Returns: A signal producer that returns the devices.
-        public static func list() -> SignalProducer<[Device], SimulatorError> {
-            return list(shell: Shell.shared)
-        }
-
-        /// Returns a signal producer that gets the list of devices from the system.
-        ///
-        /// - Parameter shell: Shell instance to run the simctl commands.
-        /// - Returns: A signal producer that returns the devices.
-        static func list(shell: Shelling) -> SignalProducer<[Device], SimulatorError> {
-            let decoder = JSONDecoder()
-            return shell.simctl(["list", "-j", "devices"])
-                .ignoreTaskData()
-                .mapError({ SimulatorError.shell($0) })
-                .attemptMap({ (data) -> Result<Any, SimulatorError> in
-                    do {
-                        return try Result.success(JSONSerialization.jsonObject(with: data, options: []))
-                    } catch {
-                        return Result.failure(SimulatorError.jsonSerialize(error))
-                    }
-                })
-                .attemptMap({ (object) -> Result<[String: [[String: Any]]], SimulatorError> in
-                    guard let dictionary = object as? [String: Any],
-                        let runtimes = dictionary["devices"] as? [String: [[String: Any]]] else {
-                        return Result.failure(SimulatorError.invalidFormat)
-                    }
-                    return Result.success(runtimes)
-                })
-                .attemptMap { (runtimes) -> Result<[Device], SimulatorError> in
-                    do {
-                        let devices = try runtimes.reduce(into: [Device]()) { devices, runtimeAndDevices in
-                            let (runtime, deviceDictionaries) = runtimeAndDevices
-                            try deviceDictionaries.forEach { deviceDictionary in
-                                var deviceDictionary = deviceDictionary
-                                deviceDictionary["runtimeName"] = runtime
-                                let deviceData = try JSONSerialization.data(withJSONObject: deviceDictionary, options: [])
-                                devices.append(try decoder.decode(Device.self, from: deviceData))
-                            }
-                        }
-                        return Result.success(devices)
-                    } catch {
-                        return Result.failure(SimulatorError.jsonDecode(error))
-                    }
-                }
-        }
     }
 }

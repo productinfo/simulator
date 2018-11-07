@@ -8,12 +8,12 @@ let package = Package(
         .library(name: "Simulator", type: .dynamic, targets: ["Simulator"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Carthage/ReactiveTask.git", .upToNextMinor(from: "0.15.0")),
+        .package(url: "https://github.com/kareman/SwiftShell.git", .upToNextMinor(from: "4.1.2")),
     ],
     targets: [
         .target(
             name: "Simulator",
-            dependencies: ["ReactiveTask"]
+            dependencies: ["SwiftShell"]
         ),
         .testTarget(
             name: "SimulatorTests",

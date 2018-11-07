@@ -1,27 +1,17 @@
 import Foundation
-import ReactiveSwift
-import ReactiveTask
-import Result
+import SwiftShell
 
 @testable import Simulator
 
 final class MockXcode: Xcoding {
-    var simulatorSDKPathStub: ((Runtime.Platform) -> Result<URL?, ShellError>)?
-    var runtimeProfilesPathStub: ((Runtime.Platform) -> Result<URL?, ShellError>)?
+    var simulatorSDKPathStub: ((Runtime.Platform) throws -> URL?)?
+    var runtimeProfilesPathStub: ((Runtime.Platform) throws -> URL?)?
 
-    func simulatorSDKPath(platform: Runtime.Platform) -> SignalProducer<URL?, ShellError> {
-        if let result = simulatorSDKPathStub?(platform) {
-            return SignalProducer(result: result)
-        } else {
-            return SignalProducer(value: nil)
-        }
+    func simulatorSDKPath(platform: Runtime.Platform) throws -> URL? {
+        return try simulatorSDKPathStub?(platform)
     }
 
-    func runtimeProfilesPath(platform: Runtime.Platform) -> SignalProducer<URL?, ShellError> {
-        if let result = runtimeProfilesPathStub?(platform) {
-            return SignalProducer(result: result)
-        } else {
-            return SignalProducer(value: nil)
-        }
+    func runtimeProfilesPath(platform: Runtime.Platform) throws -> URL? {
+        return try runtimeProfilesPathStub?(platform)
     }
 }
