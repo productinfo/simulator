@@ -24,7 +24,7 @@ jobs:
             swift build -c release
       - run:
           name: Run tests
-          command: xcodebuild test -scheme Simulator-Package -enableCodeCoverage YES
+          command: xcodebuild test -scheme Simulator-Package -project Simulator.xcodeproj -enableCodeCoverage YES
 
       - run:
           name: Build Carthage project
