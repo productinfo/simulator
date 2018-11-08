@@ -1,6 +1,89 @@
 {
   "warnings": [
-
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/Runtime.swift",
+      "line": 12,
+      "symbol": "Runtime.Platform.iOS",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/Runtime.swift",
+      "line": 13,
+      "symbol": "Runtime.Platform.watchOS",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/Runtime.swift",
+      "line": 14,
+      "symbol": "Runtime.Platform.tvOS",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/Runtime.swift",
+      "line": 15,
+      "symbol": "Runtime.Platform.unknown",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/SimulatorError.swift",
+      "line": 16,
+      "symbol": "SimulatorError.noOutput",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/SimulatorError.swift",
+      "line": 17,
+      "symbol": "SimulatorError.jsonSerialize(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/SimulatorError.swift",
+      "line": 18,
+      "symbol": "SimulatorError.jsonDecode(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/SimulatorError.swift",
+      "line": 19,
+      "symbol": "SimulatorError.invalidFormat",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/SimulatorError.swift",
+      "line": 20,
+      "symbol": "SimulatorError.deviceTypeNotFound",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/SimulatorError.swift",
+      "line": 21,
+      "symbol": "SimulatorError.runtimeNotFound",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/SimulatorError.swift",
+      "line": 22,
+      "symbol": "SimulatorError.runtimeProfileNotFound",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/pedropinera/src/github.com/tuist/simulator/Sources/Simulator/SimulatorError.swift",
+      "line": 23,
+      "symbol": "SimulatorError.invalidLaunchCtlListOutput",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    }
   ],
   "source_directory": "/Users/pedropinera/src/github.com/tuist/simulator"
 }

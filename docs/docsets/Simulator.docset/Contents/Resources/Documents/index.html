@@ -18,7 +18,7 @@
         <a class='header-link' href='index.html'>
           Simulator Docs
         </a>
-         (100% documented)
+         (78% documented)
       </p>
     
         <p class='header-col header-col--secondary'>
@@ -40,10 +40,35 @@
       <nav class='navigation'>
         <ul class='nav-groups'>
           <li class='nav-group-name'>
-            <a class='nav-group-name-link' href='Classes.html'>Classes</a>
+            <a class='nav-group-name-link' href='Enumerations.html'>Enumerations</a>
             <ul class='nav-group-tasks'>
               <li class='nav-group-task'>
-                <a class='nav-group-task-link' href='Classes/Device.html'>Device</a>
+                <a class='nav-group-task-link' href='Enums/SimulatorError.html'>SimulatorError</a>
+              </li>
+            </ul>
+          </li>
+          <li class='nav-group-name'>
+            <a class='nav-group-name-link' href='Extensions.html'>Extensions</a>
+            <ul class='nav-group-tasks'>
+              <li class='nav-group-task'>
+                <a class='nav-group-task-link' href='Extensions/String.html'>String</a>
+              </li>
+            </ul>
+          </li>
+          <li class='nav-group-name'>
+            <a class='nav-group-name-link' href='Structures.html'>Structures</a>
+            <ul class='nav-group-tasks'>
+              <li class='nav-group-task'>
+                <a class='nav-group-task-link' href='Structs/Device.html'>Device</a>
+              </li>
+              <li class='nav-group-task'>
+                <a class='nav-group-task-link' href='Structs/Runtime.html'>Runtime</a>
+              </li>
+              <li class='nav-group-task'>
+                <a class='nav-group-task-link' href='Structs/Runtime/Platform.html'>– Platform</a>
+              </li>
+              <li class='nav-group-task'>
+                <a class='nav-group-task-link' href='Structs/Service.html'>Service</a>
               </li>
             </ul>
           </li>
@@ -62,6 +87,40 @@
 <a href="https://circleci.com/gh/tuist/simulator"><img src="https://circleci.com/gh/tuist/simulator.svg?style=svg" alt="CircleCI"></a>
 <a href="https://codecov.io/gh/tuist/simulator"><img src="https://codecov.io/gh/tuist/simulator/branch/master/graph/badge.svg" alt="codecov"></a>
 <a href="http://slack.tuist.io"><img src="http://slack.tuist.io/badge.svg" alt="Slack"></a></p>
+<h2 id='install' class='heading'>Install 🛠</h2>
+<h3 id='using-cocoapods' class='heading'>Using CocoaPods</h3>
+
+<p>Addd the following line to your <code>Podfile</code> and run <code>pod install</code>:</p>
+<pre class="highlight ruby"><code><span class="n">pod</span> <span class="s2">"Simulator"</span><span class="p">,</span> <span class="s2">"~&gt; 0.2.0"</span>
+</code></pre>
+<h3 id='using-swift-package-manager' class='heading'>Using Swift Package Manager</h3>
+
+<p>Add the following dependency to your <code>Package.swift</code>:</p>
+<pre class="highlight swift"><code><span class="o">.</span><span class="nf">package</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="s">"https://github.com/tuist/simulator.git"</span><span class="p">,</span> <span class="o">.</span><span class="nf">upToNextMinor</span><span class="p">(</span><span class="nv">from</span><span class="p">:</span> <span class="s">"0.2.0"</span><span class="p">)),</span>
+</code></pre>
+<h3 id='using-carthage' class='heading'>Using Carthage</h3>
+
+<p>Add the following line to your <code>Cartfile</code> and link the <code>Simulator.framework</code> from the project:</p>
+<pre class="highlight ruby"><code><span class="n">github</span> <span class="s2">"tuist/simulator"</span> <span class="o">~&gt;</span> <span class="mf">0.2</span><span class="o">.</span><span class="mi">0</span>
+</code></pre>
+
+<blockquote>
+<p>Note: Simulator is only compatible with macOS</p>
+</blockquote>
+<h2 id='usage' class='heading'>Usage 🚀</h2>
+
+<p><strong>Devices</strong></p>
+<pre class="highlight swift"><code><span class="c1">// List devices</span>
+<span class="k">let</span> <span class="nv">devices</span> <span class="o">=</span> <span class="kt">Device</span><span class="o">.</span><span class="n">list</span>
+</code></pre>
+
+<p><strong>Runtimes</strong></p>
+<pre class="highlight swift"><code><span class="c1">// List runtimes</span>
+<span class="k">let</span> <span class="nv">runtimes</span> <span class="o">=</span> <span class="kt">Runtime</span><span class="o">.</span><span class="n">list</span>
+
+<span class="c1">// Get the latest runtime</span>
+<span class="k">let</span> <span class="nv">latestiOS</span> <span class="o">=</span> <span class="kt">Runtime</span><span class="o">.</span><span class="nf">latest</span><span class="p">(</span><span class="nv">platform</span><span class="p">:</span> <span class="o">.</span><span class="n">iOS</span><span class="p">)</span>
+</code></pre>
 <h2 id='setup-for-development' class='heading'>Setup for development 👩‍💻</h2>
 
 <ol>
@@ -70,18 +129,6 @@
 <li>Open <code>Simulator.xcodeproj</code>.</li>
 <li>Have fun 🤖</li>
 </ol>
-<h2 id='usage' class='heading'>Usage</h2>
-
-<p><strong>Listing the devices</strong></p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">devices</span> <span class="o">=</span> <span class="kt">Device</span><span class="o">.</span><span class="n">list</span>
-</code></pre>
-<h2 id='donations' class='heading'>Donations</h2>
-
-<p>Tuist is a non-profit project run entirely by unpaid volunteers. We need your funds to pay for software, hardware and hosting around continuous integration and future improvements to the project. Every donation will be spent on making Tuist better for our users.</p>
-
-<p>Please consider a regular donation through Patreon:</p>
-
-<p><a href="https://www.patreon.com/tuist"><img src="https://img.shields.io/badge/patreon-donate-green.svg" alt="Donate with Patreon"></a></p>
 <h2 id='open-source' class='heading'>Open source</h2>
 
 <p>Tuist is a proud supporter of the <a href="https://sfconservancy.org/">Software Freedom Conservacy</a></p>
