@@ -6,9 +6,14 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Dependencies
+          name: Install Tools
           command: |
             brew install swiftlint
+            brew install carthage
+      - run:
+          name: Fetch dependencies
+          command: |
+            carthage update --platform macos
       - run:
           name: Generate Xcode project
           command: |
@@ -19,7 +24,12 @@ jobs:
             swift build -c release
       - run:
           name: Run tests
-          command: xcodebuild test -scheme Simulator-Package -enableCodeCoverage YES
+          command: xcodebuild test -scheme Simulator-Package -project Simulator.xcodeproj -enableCodeCoverage YES
+
+      - run:
+          name: Build Carthage project
+          command: |
+            xcodebuild build -scheme Simulator -project Simulator-Carthage.xcodeproj
       - run:
           name: Send test coverage report
           command: bash <(curl -s https://codecov.io/bash)
