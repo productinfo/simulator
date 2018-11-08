@@ -13,7 +13,7 @@ A simctl wrapper in Swift.
 
 Addd the following line to your `Podfile` and run `pod install`:
 
-```
+```ruby
 pod "Simulator", "~> 0.1.0"
 ```
 
@@ -21,20 +21,16 @@ pod "Simulator", "~> 0.1.0"
 
 Add the following dependency to your `Package.swift`:
 
-```
-
+```swift
 .package(url: "https://github.com/tuist/simulator.git", .upToNextMinor(from: "0.1.0")),
-
 ```
 
 ### Using Carthage
 
 Add the following line to your `Cartfile` and link the `Simulator.framework` from the project:
 
-```
-
+```ruby
 github "tuist/simulator" ~> 0.1.0
-
 ```
 
 > Note: Simulator is only compatible with macOS
