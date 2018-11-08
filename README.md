@@ -11,7 +11,7 @@ A simctl wrapper in Swift.
 
 ### Using CocoaPods
 
-Addd the following line to your `Podfile` and run `pod install`:
+Add the following line to your `Podfile` and run `pod install`:
 
 ```ruby
 pod "Simulator", "~> 0.2.0"
