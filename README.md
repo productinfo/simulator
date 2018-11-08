@@ -7,14 +7,39 @@ A simctl wrapper in Swift.
 [![codecov](https://codecov.io/gh/tuist/simulator/branch/master/graph/badge.svg)](https://codecov.io/gh/tuist/simulator)
 [![Slack](http://slack.tuist.io/badge.svg)](http://slack.tuist.io)
 
-## Setup for development 👩‍💻
+## Install 🛠
 
-1.  Git clone: `git@github.com:tuist/simulator.git`
-2.  Generate Xcode project with `swift package generate-xcodeproj`.
-3.  Open `Simulator.xcodeproj`.
-4.  Have fun 🤖
+### Using CocoaPods
 
-## Usage
+Addd the following line to your `Podfile` and run `pod install`:
+
+```
+pod "Simulator", "~> 0.1.0"
+```
+
+### Using Swift Package Manager
+
+Add the following dependency to your `Package.swift`:
+
+```
+
+.package(url: "https://github.com/tuist/simulator.git", .upToNextMinor(from: "0.1.0")),
+
+```
+
+### Using Carthage
+
+Add the following line to your `Cartfile` and link the `Simulator.framework` from the project:
+
+```
+
+github "tuist/simulator" ~> 0.1.0
+
+```
+
+> Note: Simulator is only compatible with macOS
+
+## Usage 🚀
 
 **Devices**
 
@@ -33,12 +58,15 @@ let runtimes = Runtime.list
 let latestiOS = Runtime.latest(platform: .iOS)
 ```
 
+## Setup for development 👩‍💻
+
+1.  Git clone: `git@github.com:tuist/simulator.git`
+2.  Generate Xcode project with `swift package generate-xcodeproj`.
+3.  Open `Simulator.xcodeproj`.
+4.  Have fun 🤖
+
 ## Open source
 
 Tuist is a proud supporter of the [Software Freedom Conservacy](https://sfconservancy.org/)
 
 <a href="https://sfconservancy.org/supporter/"><img src="https://sfconservancy.org/img/supporter-badge.png" width="194" height="90" alt="Become a Conservancy Supporter!" border="0"/></a>
-
-```
-
-```
