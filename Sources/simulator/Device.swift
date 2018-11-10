@@ -96,6 +96,18 @@ public struct Device: Decodable, Equatable {
         }
         return devices
     }
+    
+    /// Launches the given app from the device.
+    ///
+    /// - Parameters:
+    ///   - bundleIdentifier: The app bundle identifier.
+    /// - Throws: An error if the app cannot be uninstalled.
+    public func launch(_ bundleIdentifier: String) throws {
+        let output = try Shell.shared.simctl(["launch", udid, bundleIdentifier])
+        if let error = output.error {
+            throw error
+        }
+    }
 
     /// Kills the device. It findes the process associated to it and kills it.
     ///
@@ -130,7 +142,7 @@ public struct Device: Decodable, Equatable {
     ///
     /// - Parameters:
     ///   - bundleIdentifier: The app bundle identifier.
-    /// - Throws: An error if the app cannot be uninstalled
+    /// - Throws: An error if the app cannot be uninstalled.
     func uninstall(_ bundleIdentifier: String) throws {
         let output = try Shell.shared.simctl(["uninstall", udid, bundleIdentifier])
         if let error = output.error {
