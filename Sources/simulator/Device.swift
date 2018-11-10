@@ -132,7 +132,7 @@ public struct Device: Decodable, Equatable {
     ///   - path: Path to the app bundle (with .app extension)
     /// - Throws: An error if the app cannot be installed
     public func install(_ path: URL) throws {
-        let output = try Shell.shared.simctl(["install" , udid, path.path])
+        let output = try Shell.shared.simctl(["install", udid, path.path])
         if let error = output.error {
             throw error
         }
