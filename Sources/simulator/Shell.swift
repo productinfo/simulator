@@ -96,7 +96,7 @@ protocol Shelling {
 /// Struct that conforms the Shelling providing a default implementation.
 public struct Shell: Shelling {
     /// Shared instance of Shell.
-    public static let shared: Shelling = Shell()
+    public static let shared = Shell()
 
     // MARK: - Shelling
 
