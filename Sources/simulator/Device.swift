@@ -97,12 +97,22 @@ public struct Device: Decodable, Equatable {
         return devices
     }
     
+    /// Launches the device.
+    ///
+    /// - Throws: An error if the device cannot be launched.
+    public func launch() throws {
+        let output = try Shell.shared.xcrun(["instruments", "-w", udid])
+        if let error = output.error {
+            throw error
+        }
+    }
+    
     /// Launches the given app from the device.
     ///
     /// - Parameters:
     ///   - bundleIdentifier: The app bundle identifier.
     /// - Throws: An error if the app cannot be launched.
-    public func launch(_ bundleIdentifier: String) throws {
+    public func launchApp(_ bundleIdentifier: String) throws {
         let output = try Shell.shared.simctl(["launch", udid, bundleIdentifier])
         if let error = output.error {
             throw error
