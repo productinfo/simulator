@@ -103,7 +103,7 @@ public struct Device: Decodable, Equatable {
     ///   - bundleIdentifier: The app bundle identifier.
     /// - Throws: An error if the app cannot be uninstalled.
     public func launch(_ bundleIdentifier: String) throws {
-        let output = try Shell.shared.simctl(["launch", udid, bundleIdentifier])
+        let output = try Shell.shared.simctl(["launch", "booted", udid, bundleIdentifier])
         if let error = output.error {
             throw error
         }
@@ -132,7 +132,7 @@ public struct Device: Decodable, Equatable {
     ///   - path: Path to the app bundle (with .app extension)
     /// - Throws: An error if the app cannot be installed
     public func install(_ path: URL) throws {
-        let output = try Shell.shared.simctl(["install", udid, path.path])
+        let output = try Shell.shared.simctl(["install", "booted" , udid, path.path])
         if let error = output.error {
             throw error
         }
