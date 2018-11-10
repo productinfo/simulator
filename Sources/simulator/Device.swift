@@ -101,7 +101,7 @@ public struct Device: Decodable, Equatable {
     ///
     /// - Parameters:
     ///   - bundleIdentifier: The app bundle identifier.
-    /// - Throws: An error if the app cannot be uninstalled.
+    /// - Throws: An error if the app cannot be launched.
     public func launch(_ bundleIdentifier: String) throws {
         let output = try Shell.shared.simctl(["launch", udid, bundleIdentifier])
         if let error = output.error {
