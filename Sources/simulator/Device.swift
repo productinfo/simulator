@@ -29,6 +29,8 @@ public struct Device: Decodable, Equatable {
     /// Name of the device runtime.
     /// Example: iOS 12.1
     public let runtimeName: String
+    
+    static var shell: Shelling = Shell.shared
 
     /// Coding keys
     enum CodingKeys: String, CodingKey {
@@ -75,7 +77,7 @@ public struct Device: Decodable, Equatable {
     /// - Throws: An error if the simctl command fails.
     public static func list() throws -> [Device] {
         let decoder = JSONDecoder()
-        let output = try Shell.shared.simctl(["list", "-j", "devices"])
+        let output = try shell.simctl(["list", "-j", "devices"])
         if let error = output.error {
             throw error
         }
@@ -101,7 +103,7 @@ public struct Device: Decodable, Equatable {
     ///
     /// - Throws: An error if the device cannot be launched.
     public func launch() throws {
-        let output = try Shell.shared.xcrun(["instruments", "-w", udid])
+        let output = try Device.shell.xcrun(["instruments", "-w", udid])
         if let error = output.error {
             throw error
         }
@@ -113,7 +115,7 @@ public struct Device: Decodable, Equatable {
     ///   - bundleIdentifier: The app bundle identifier.
     /// - Throws: An error if the app cannot be launched.
     public func launchApp(_ bundleIdentifier: String) throws {
-        let output = try Shell.shared.simctl(["launch", udid, bundleIdentifier])
+        let output = try Device.shell.simctl(["launch", udid, bundleIdentifier])
         if let error = output.error {
             throw error
         }
@@ -125,14 +127,14 @@ public struct Device: Decodable, Equatable {
     /// - Throws: An error if any of the underlying commands fails.
     public func kill() throws -> Bool {
         let argument = "xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
-        let output = Shell.shared.run(launchPath: "/bin/ps", arguments: [argument])
+        let output = Device.shell.run(launchPath: "/bin/ps", arguments: [argument])
         if let error = output.error {
             throw error
         }
         guard let pid = Int(output.stdout.spm_chomp()) else {
             return false
         }
-        let killOutput = Shell.shared.run(launchPath: "/bin/kill", arguments: ["\(pid)"])
+        let killOutput = Device.shell.run(launchPath: "/bin/kill", arguments: ["\(pid)"])
         return killOutput.exitcode == 0
     }
 
@@ -142,7 +144,7 @@ public struct Device: Decodable, Equatable {
     ///   - path: Path to the app bundle (with .app extension)
     /// - Throws: An error if the app cannot be installed
     public func install(_ path: URL) throws {
-        let output = try Shell.shared.simctl(["install", udid, path.path])
+        let output = try Device.shell.simctl(["install", udid, path.path])
         if let error = output.error {
             throw error
         }
@@ -154,7 +156,7 @@ public struct Device: Decodable, Equatable {
     ///   - bundleIdentifier: The app bundle identifier.
     /// - Throws: An error if the app cannot be uninstalled.
     func uninstall(_ bundleIdentifier: String) throws {
-        let output = try Shell.shared.simctl(["uninstall", udid, bundleIdentifier])
+        let output = try Device.shell.simctl(["uninstall", udid, bundleIdentifier])
         if let error = output.error {
             throw error
         }
@@ -164,7 +166,7 @@ public struct Device: Decodable, Equatable {
     ///
     /// - Throws: An error if the device cannot be erased.
     func erase() throws {
-        let output = try Shell.shared.simctl(["erase", udid])
+        let output = try Device.shell.simctl(["erase", udid])
         if let error = output.error {
             throw error
         }
@@ -267,7 +269,7 @@ public struct Device: Decodable, Equatable {
     /// - Returns: List of services.
     /// - Throws: An error if the launchctl path cannot be obatined or the output is invalid.
     public func services() throws -> [Service] {
-        let output = Shell.shared.run(launchPath: try launchCtlPath().path, arguments: ["list"])
+        let output = Device.shell.run(launchPath: try launchCtlPath().path, arguments: ["list"])
         if let error = output.error {
             throw error
         }
