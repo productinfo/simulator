@@ -88,8 +88,14 @@ final class DeviceTests: XCTestCase {
     
     func testLaunch() throws {
         Device.shell = shell
+        
+        let xcodePath = "/xcode/path"
+        shell.xcodePathStub = {
+            return xcodePath
+        }
+        
         shell.xcrunStub = { (arguments: [String]) -> ShellOutput  in
-            XCTAssertEqual(arguments, ["instruments", "-w", self.device.udid])
+            XCTAssertEqual(arguments, ["open", "-Fgn", "/xcode/path/Applications/Simulator.app", "-CurrentDeviceUDID", self.device.udid])
             return ShellOutput()
         }
         
