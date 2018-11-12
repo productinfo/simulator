@@ -2,7 +2,12 @@
 
 Please, check out guidelines: https://keepachangelog.com/en/1.0.0/
 
-## Next version
+## 0.3.0
+
+### Added
+
+- Add `Device.launch` method by @frowing
+- Add `Device.launchApp` method by @frowing
 
 ## 0.2.0
 
