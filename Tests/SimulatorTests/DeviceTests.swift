@@ -95,7 +95,7 @@ final class DeviceTests: XCTestCase {
         }
         
         shell.openStub = { (arguments: [String]) in
-            XCTAssertEqual(arguments, ["-Fgn", "/xcode/path/Applications/Simulator.app", "-CurrentDeviceUDID", self.device.udid])
+            XCTAssertEqual(arguments, ["-Fgn", "/xcode/path/Applications/Simulator.app", "--args","-CurrentDeviceUDID", self.device.udid])
         }
         
         try device.launch()
