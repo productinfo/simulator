@@ -102,8 +102,7 @@ public struct Device: Decodable, Equatable {
     ///
     /// - Throws: An error if the device cannot be launched.
     public func launch() throws {
-        let output = try Device.shell.xcrun(["open", "-Fgn", "\(Device.shell.xcodePath())/Applications/Simulator.app", "-CurrentDeviceUDID", udid])
-        try output.throwIfNeeded()
+        try Device.shell.open(["-Fgn", "\(Device.shell.xcodePath())/Applications/Simulator.app", "-CurrentDeviceUDID", udid])
     }
     
     /// Launches the given app from the device.
