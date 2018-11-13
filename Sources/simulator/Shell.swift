@@ -3,7 +3,7 @@ import SwiftShell
 
 /// This structs wraps the SwiftShell RunOutput to facilitate testing.
 /// The RunOutput doesn't provide any initializer that that initializes the result with its properties.
-public struct ShellOutput {
+struct ShellOutput {
     /// Standard output string.
     let stdout: String
 
@@ -100,9 +100,9 @@ protocol Shelling {
 }
 
 /// Struct that conforms the Shelling providing a default implementation.
-public struct Shell: Shelling {
+struct Shell: Shelling {
     /// Shared instance of Shell.
-    public static let shared = Shell()
+    static let shared = Shell()
 
     // MARK: - Shelling
 
@@ -110,7 +110,7 @@ public struct Shell: Shelling {
     ///
     /// - Parameter arguments: Arguments to be passed to open.
     /// - Throws: A CommandError if the open command fails.
-    public func open(_ arguments: [String]) throws {
+    func open(_ arguments: [String]) throws {
         let output = run(launchPath: "/usr/bin/open", arguments: arguments)
         try output.throwIfNeeded()
     }
@@ -120,7 +120,7 @@ public struct Shell: Shelling {
     /// - Parameter arguments: Arguments to be passed to simctl.
     /// - Returns: The command output.
     /// - Throws: A CommandError if the command fails.
-    public func simctl(_ arguments: [String]) throws -> ShellOutput {
+    func simctl(_ arguments: [String]) throws -> ShellOutput {
         var arguments = arguments
         arguments.insert("simctl", at: 0)
         return try xcrun(arguments)
@@ -131,7 +131,7 @@ public struct Shell: Shelling {
     /// - Parameter arguments: Arguments to be passed to xcrun.
     /// - Returns: The output from running the command.
     /// - Throws: A CommandError if the command fails.
-    public func xcrun(_ arguments: [String]) throws -> ShellOutput {
+    func xcrun(_ arguments: [String]) throws -> ShellOutput {
         let path = try xcrunPath()
         return run(launchPath: path, arguments: arguments)
     }
@@ -141,7 +141,7 @@ public struct Shell: Shelling {
     /// - Parameter name: Name of the tool.
     /// - Returns: Which result.
     /// - Throws: CommandError if the command fails.
-    public func which(_ name: String) throws -> String {
+    func which(_ name: String) throws -> String {
         let output = run(launchPath: "/usr/bin/which", arguments: [name])
         try output.throwIfNeeded()
         return output.stdout.spm_chomp()
@@ -153,7 +153,7 @@ public struct Shell: Shelling {
     ///   - launchPath: Path to be launched.
     ///   - arguments: List of arguments to be passed to the command.
     /// - Returns: The output from running the command.
-    public func run(launchPath: String, arguments: [String]) -> ShellOutput {
+    func run(launchPath: String, arguments: [String]) -> ShellOutput {
         return ShellOutput(SwiftShell.run(launchPath, arguments))
     }
 
@@ -161,7 +161,7 @@ public struct Shell: Shelling {
     ///
     /// - Returns: Xcode path.
     /// - Throws: CommandError if the command fails.
-    public func xcodePath() throws -> String {
+    func xcodePath() throws -> String {
         let output = run(launchPath: "/usr/bin/xcode-select", arguments: ["-p"])
         try output.throwIfNeeded()
         return output.stdout.spm_chomp()
