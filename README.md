@@ -14,7 +14,7 @@ A simctl wrapper in Swift.
 Add the following line to your `Podfile` and run `pod install`:
 
 ```ruby
-pod "Simulator", "~> 0.2.0"
+pod "Simulator", "~> 0.3.0"
 ```
 
 ### Using Swift Package Manager
@@ -22,7 +22,7 @@ pod "Simulator", "~> 0.2.0"
 Add the following dependency to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/tuist/simulator.git", .upToNextMinor(from: "0.2.0")),
+.package(url: "https://github.com/tuist/simulator.git", .upToNextMinor(from: "0.3.0")),
 ```
 
 ### Using Carthage
@@ -30,7 +30,7 @@ Add the following dependency to your `Package.swift`:
 Add the following line to your `Cartfile` and link the `Simulator.framework` from the project:
 
 ```ruby
-github "tuist/simulator" ~> 0.2.0
+github "tuist/simulator" ~> 0.3.0
 ```
 
 > Note: Simulator is only compatible with macOS
@@ -41,17 +41,34 @@ github "tuist/simulator" ~> 0.2.0
 
 ```swift
 // List devices
-let devices = Device.list
+let devices = try Device.list
+
+// Launch simulator
+try device.launch()
+
+// Install an app
+let appPath = URL(fileURLWithPath: "/path/App.app")
+try device.install(appPath)
+
+// Uninstall an app
+try device.uninstall("io.tuist.App")
+
+// Erase the device content
+try device.erase()
+
+// Get device runtime
+let runtime = try device.runtime()
+let runtimeVersion = runtime.version
 ```
 
 **Runtimes**
 
 ```swift
 // List runtimes
-let runtimes = Runtime.list
+let runtimes = try Runtime.list
 
 // Get the latest runtime
-let latestiOS = Runtime.latest(platform: .iOS)
+let latestiOS = try Runtime.latest(platform: .iOS)
 ```
 
 ## Setup for development 👩‍💻

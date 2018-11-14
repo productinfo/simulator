@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		36282E30A467C044B9A9648312263757 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCC82A57F388E0B1F90513148B57664 /* Device.swift */; };
-		3D865EB05A3841ADC2F8DBCEDE553B14 /* Runtime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 363AF5B07FD4A7BEBCD95B3478E8842F /* Runtime.swift */; };
-		406AC3CAD2748415FA803B0A30F21D2B /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5D12800626C1EFE9AA7D0716140A20 /* Service.swift */; };
-		73D3F74385B0B4685C8A78F956B0468A /* SimulatorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4B7F17D09B8849CC07EA7F38385424 /* SimulatorError.swift */; };
-		879D2E4FD64963C3DEB7BC6C443DD5E1 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4FE39DFD932B8505C6D972E61EAE721 /* StringExtensions.swift */; };
+		36282E30A467C044B9A9648312263757 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DCC82A57F388E0B1F90513148B57664 /* Device.swift */; settings = {}; };
+		3D865EB05A3841ADC2F8DBCEDE553B14 /* Runtime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 363AF5B07FD4A7BEBCD95B3478E8842F /* Runtime.swift */; settings = {}; };
+		406AC3CAD2748415FA803B0A30F21D2B /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5D12800626C1EFE9AA7D0716140A20 /* Service.swift */; settings = {}; };
+		73D3F74385B0B4685C8A78F956B0468A /* SimulatorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4B7F17D09B8849CC07EA7F38385424 /* SimulatorError.swift */; settings = {}; };
+		879D2E4FD64963C3DEB7BC6C443DD5E1 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4FE39DFD932B8505C6D972E61EAE721 /* StringExtensions.swift */; settings = {}; };
 		8DA4EC27ADB013071ECEC7DFF1A1F11E /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9EE4C39AED376247ABD36E960BD9FD1 /* Project.swift */; };
-		D3E53EFAFE8949D342FD0CB8D900EB72 /* Xcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C865B160D15F0AD5D95AA9197970F /* Xcode.swift */; };
+		D3E53EFAFE8949D342FD0CB8D900EB72 /* Xcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49C865B160D15F0AD5D95AA9197970F /* Xcode.swift */; settings = {}; };
 		EFD0802EAA39E57AD64B2867FB7DC4EE /* SwiftShell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B54622B1A13F09C0F12BBA2DBBBB69EA /* SwiftShell.framework */; };
-		FD4E998A74EFCF8B4CAE4122AB52E59A /* Shell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BDC9BE821F259F180707902076074F /* Shell.swift */; };
+		FD4E998A74EFCF8B4CAE4122AB52E59A /* Shell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BDC9BE821F259F180707902076074F /* Shell.swift */; settings = {}; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,9 +40,9 @@
 		9E5D12800626C1EFE9AA7D0716140A20 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
 		B49C865B160D15F0AD5D95AA9197970F /* Xcode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Xcode.swift; sourceTree = "<group>"; };
 		B54622B1A13F09C0F12BBA2DBBBB69EA /* SwiftShell.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftShell.framework; sourceTree = "<group>"; };
-		C9EE4C39AED376247ABD36E960BD9FD1 /* Project.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		C9EE4C39AED376247ABD36E960BD9FD1 /* Project.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; lastKnownFileType = sourcecode.swift; name = Project.swift; path = Project.swift; sourceTree = "<group>"; };
 		E4FE39DFD932B8505C6D972E61EAE721 /* StringExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
-		F57F0ED7E712FB88DB332170425E7A48 /* Simulator-CarthageDescription.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "Simulator-CarthageDescription.framework"; path = Simulator_CarthageDescription.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F57F0ED7E712FB88DB332170425E7A48 /* Simulator-CarthageDescription.framework */ = {isa = PBXFileReference; name = "Simulator-CarthageDescription.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +108,7 @@
 				FC562685CF9BD88A1FD55EAEEF486FD1 /* Project */,
 				071A9E9F1EC825F043D3D35279434FD0 /* ProjectDescription */,
 				00BE0DB330DEBD582B4CDC90EE9A3EF2 /* Frameworks */,
+				C34C2D50170CA28C733E409CE268BE53 /* Playgrounds */,
 				B1FCA822AD11249C78BF51742FA21682 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -127,6 +128,13 @@
 				F57F0ED7E712FB88DB332170425E7A48 /* Simulator-CarthageDescription.framework */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C34C2D50170CA28C733E409CE268BE53 /* Playgrounds */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Playgrounds;
 			sourceTree = "<group>";
 		};
 		DDF50D1AFAD873EFABB50786ACDD7C97 /* Carthage */ = {
@@ -276,11 +284,7 @@
 				FRAMEWORK_VERSION = A;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD = /usr/bin/true;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				LIBRARY_SEARCH_PATHS = /Users/pedropinera/.tuist/Versions/0.8.0;
 				OTHER_SWIFT_FLAGS = "-swift-version 4 -I /Users/pedropinera/.tuist/Versions/0.8.0";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -368,11 +372,7 @@
 				HEADER_SEARCH_PATHS = " ";
 				INFOPLIST_FILE = "$(SRCROOT)/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.tuist.Simulator;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = macosx;
@@ -393,7 +393,6 @@
 				65B5356D30C8133CE26D12BB50EC19E1 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
 		};
 		EF9002C2FF474BDD2119E258E4BDEE0B /* Build configuration list for PBXNativeTarget "Simulator" */ = {
 			isa = XCConfigurationList;
@@ -401,7 +400,6 @@
 				91DF29B8F2822F065C21DE3340FF321F /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
 		};
 		FE8A281649B0EFDA098F6FC19BEA4B72 /* Build configuration list for PBXProject "Simulator-Carthage" */ = {
 			isa = XCConfigurationList;
@@ -409,7 +407,6 @@
 				73097C7CEA498914E2D1CA8E64D5F47E /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
