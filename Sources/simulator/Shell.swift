@@ -49,6 +49,12 @@ struct ShellOutput {
         self.succeeded = succeeded
         self.error = error
     }
+    
+    func throwIfNeeded() throws {
+        if let error = error {
+            throw error
+        }
+    }
 }
 
 /// Protocol that defines the interface of an entity that runs shell commands.
@@ -96,7 +102,7 @@ protocol Shelling {
 /// Struct that conforms the Shelling providing a default implementation.
 struct Shell: Shelling {
     /// Shared instance of Shell.
-    public static let shared: Shelling = Shell()
+    static let shared = Shell()
 
     // MARK: - Shelling
 
@@ -106,9 +112,7 @@ struct Shell: Shelling {
     /// - Throws: A CommandError if the open command fails.
     func open(_ arguments: [String]) throws {
         let output = run(launchPath: "/usr/bin/open", arguments: arguments)
-        if let error = output.error {
-            throw error
-        }
+        try output.throwIfNeeded()
     }
 
     /// Runs simctl with the given arguments.
@@ -139,9 +143,7 @@ struct Shell: Shelling {
     /// - Throws: CommandError if the command fails.
     func which(_ name: String) throws -> String {
         let output = run(launchPath: "/usr/bin/which", arguments: [name])
-        if let error = output.error {
-            throw error
-        }
+        try output.throwIfNeeded()
         return output.stdout.spm_chomp()
     }
 
@@ -161,9 +163,7 @@ struct Shell: Shelling {
     /// - Throws: CommandError if the command fails.
     func xcodePath() throws -> String {
         let output = run(launchPath: "/usr/bin/xcode-select", arguments: ["-p"])
-        if let error = output.error {
-            throw error
-        }
+        try output.throwIfNeeded()
         return output.stdout.spm_chomp()
     }
 

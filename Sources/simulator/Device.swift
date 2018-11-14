@@ -29,6 +29,8 @@ public struct Device: Decodable, Equatable {
     /// Name of the device runtime.
     /// Example: iOS 12.1
     public let runtimeName: String
+    
+    static var shell: Shelling = Shell.shared
 
     /// Coding keys
     enum CodingKeys: String, CodingKey {
@@ -75,10 +77,9 @@ public struct Device: Decodable, Equatable {
     /// - Throws: An error if the simctl command fails.
     public static func list() throws -> [Device] {
         let decoder = JSONDecoder()
-        let output = try Shell.shared.simctl(["list", "-j", "devices"])
-        if let error = output.error {
-            throw error
-        }
+        let output = try shell.simctl(["list", "-j", "devices"])
+        try output.throwIfNeeded()
+        
         let data = output.stdout.data(using: .utf8) ?? Data()
         let json = try JSONSerialization.jsonObject(with: data, options: [])
         guard let dictionary = json as? [String: Any],
@@ -96,6 +97,23 @@ public struct Device: Decodable, Equatable {
         }
         return devices
     }
+    
+    /// Launches the device.
+    ///
+    /// - Throws: An error if the device cannot be launched.
+    public func launch() throws {
+        try Device.shell.open(["-Fgn", "\(Device.shell.xcodePath())/Applications/Simulator.app", "--args", "-CurrentDeviceUDID", udid])
+    }
+    
+    /// Launches the given app from the device.
+    ///
+    /// - Parameters:
+    ///   - bundleIdentifier: The app bundle identifier.
+    /// - Throws: An error if the app cannot be launched.
+    public func launchApp(_ bundleIdentifier: String) throws {
+        let output = try Device.shell.simctl(["launch", udid, bundleIdentifier])
+        try output.throwIfNeeded()
+    }
 
     /// Kills the device. It findes the process associated to it and kills it.
     ///
@@ -103,14 +121,12 @@ public struct Device: Decodable, Equatable {
     /// - Throws: An error if any of the underlying commands fails.
     public func kill() throws -> Bool {
         let argument = "xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
-        let output = Shell.shared.run(launchPath: "/bin/ps", arguments: [argument])
-        if let error = output.error {
-            throw error
-        }
+        let output = Device.shell.run(launchPath: "/bin/ps", arguments: [argument])
+        try output.throwIfNeeded()
         guard let pid = Int(output.stdout.spm_chomp()) else {
             return false
         }
-        let killOutput = Shell.shared.run(launchPath: "/bin/kill", arguments: ["\(pid)"])
+        let killOutput = Device.shell.run(launchPath: "/bin/kill", arguments: ["\(pid)"])
         return killOutput.exitcode == 0
     }
 
@@ -120,32 +136,26 @@ public struct Device: Decodable, Equatable {
     ///   - path: Path to the app bundle (with .app extension)
     /// - Throws: An error if the app cannot be installed
     public func install(_ path: URL) throws {
-        let output = try Shell.shared.simctl(["install", udid, path.path])
-        if let error = output.error {
-            throw error
-        }
+        let output = try Device.shell.simctl(["install", udid, path.path])
+        try output.throwIfNeeded()
     }
 
     /// Uninstalls the given app from the device.
     ///
     /// - Parameters:
     ///   - bundleIdentifier: The app bundle identifier.
-    /// - Throws: An error if the app cannot be uninstalled
+    /// - Throws: An error if the app cannot be uninstalled.
     func uninstall(_ bundleIdentifier: String) throws {
-        let output = try Shell.shared.simctl(["uninstall", udid, bundleIdentifier])
-        if let error = output.error {
-            throw error
-        }
+        let output = try Device.shell.simctl(["uninstall", udid, bundleIdentifier])
+        try output.throwIfNeeded()
     }
 
     /// Erases the device content.
     ///
     /// - Throws: An error if the device cannot be erased.
     func erase() throws {
-        let output = try Shell.shared.simctl(["erase", udid])
-        if let error = output.error {
-            throw error
-        }
+        let output = try Device.shell.simctl(["erase", udid])
+        try output.throwIfNeeded()
     }
 
     /// Returns the type of device reading the value from the device plist file.
@@ -245,10 +255,8 @@ public struct Device: Decodable, Equatable {
     /// - Returns: List of services.
     /// - Throws: An error if the launchctl path cannot be obatined or the output is invalid.
     public func services() throws -> [Service] {
-        let output = Shell.shared.run(launchPath: try launchCtlPath().path, arguments: ["list"])
-        if let error = output.error {
-            throw error
-        }
+        let output = Device.shell.run(launchPath: try launchCtlPath().path, arguments: ["list"])
+        try output.throwIfNeeded()
         return try output.stdout.split(separator: "\n")
             .dropFirst()
             .compactMap({ (line) -> Service? in

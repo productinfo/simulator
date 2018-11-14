@@ -4,6 +4,13 @@ import XCTest
 
 final class DeviceTests: XCTestCase {
     var shell: MockShell!
+    var device = Device(availability: "available",
+                        state: "booted",
+                        isAvailable: true,
+                        name: "Best Device",
+                        udid: "744bf402-280f-45cc-899b-1255cbb833bf",
+                        availabilityError: nil,
+                        runtimeName: "Best Runtime")
 
     override func setUp() {
         super.setUp()
@@ -77,5 +84,34 @@ final class DeviceTests: XCTestCase {
     func test_list_returns_a_non_empty_list() throws {
         let got = try Device.list()
         XCTAssertNotEqual(got.count, 0)
+    }
+    
+    func testLaunch() throws {
+        Device.shell = shell
+        
+        let xcodePath = "/xcode/path"
+        shell.xcodePathStub = {
+            return xcodePath
+        }
+        
+        shell.openStub = { (arguments: [String]) in
+            XCTAssertEqual(arguments, ["-Fgn", "/xcode/path/Applications/Simulator.app", "--args","-CurrentDeviceUDID", self.device.udid])
+        }
+        
+        try device.launch()
+        Device.shell = Shell.shared
+    }
+    
+    func testLaunchApp() throws {
+        Device.shell = shell
+        let bundleId = "best.app.ever"
+        
+        shell.xcrunStub = { (arguments: [String]) -> ShellOutput  in
+            XCTAssertEqual(arguments, ["launch", self.device.udid, bundleId])
+            return ShellOutput()
+        }
+        
+        try device.launchApp(bundleId)
+        Device.shell = Shell.shared
     }
 }

@@ -98,3 +98,4 @@ Carthage/Checkouts
 Carthage/Builds
 *.profraw
 TODO
+/Simulator-Carthage.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
