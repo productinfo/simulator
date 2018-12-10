@@ -7,6 +7,7 @@ A simctl wrapper in Swift.
 [![codecov](https://codecov.io/gh/tuist/simulator/branch/master/graph/badge.svg)](https://codecov.io/gh/tuist/simulator)
 [![Slack](http://slack.tuist.io/badge.svg)](http://slack.tuist.io)
 [![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/tuist)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftuist%2Fsimulator.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftuist%2Fsimulator?ref=badge_shield)
 
 ## Install 🛠
 
@@ -84,3 +85,7 @@ let latestiOS = try Runtime.latest(platform: .iOS)
 Tuist is a proud supporter of the [Software Freedom Conservacy](https://sfconservancy.org/)
 
 <a href="https://sfconservancy.org/supporter/"><img src="https://sfconservancy.org/img/supporter-badge.png" width="194" height="90" alt="Become a Conservancy Supporter!" border="0"/></a>
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftuist%2Fsimulator.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftuist%2Fsimulator?ref=badge_large)
