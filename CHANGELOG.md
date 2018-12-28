@@ -12,6 +12,7 @@ Please, check out guidelines: https://keepachangelog.com/en/1.0.0/
 
 - `Device.reload` method https://github.com/tuist/simulator/pull/11 by @pepibumur.
 - `Device.wait` method https://github.com/tuist/simulator/pull/11 by @pepibumur.
+- `Device.runtimePlatform` method https://github.com/tuist/simulator/pull/12 by @pepibumur.
 
 ## 0.3.0
 
