@@ -48,6 +48,9 @@ let devices = try Device.list
 // Launch simulator
 try device.launch()
 
+// Wait until the simulator is launched
+try device.wait(until: { $0.isBooted })
+
 // Install an app
 let appPath = URL(fileURLWithPath: "/path/App.app")
 try device.install(appPath)
@@ -86,6 +89,6 @@ Tuist is a proud supporter of the [Software Freedom Conservacy](https://sfconser
 
 <a href="https://sfconservancy.org/supporter/"><img src="https://sfconservancy.org/img/supporter-badge.png" width="194" height="90" alt="Become a Conservancy Supporter!" border="0"/></a>
 
-
 ## License
+
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Ftuist%2Fsimulator.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Ftuist%2Fsimulator?ref=badge_large)
