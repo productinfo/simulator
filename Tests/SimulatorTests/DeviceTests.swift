@@ -105,6 +105,15 @@ final class DeviceTests: XCTestCase {
         try device.launchApp(bundleId)
     }
 
+    func test_wait() throws {
+        var device = try iPhoneDevice()
+        if device.isBooted {
+            _ = try device.kill()
+        }
+        try device.launch()
+        try device.wait(until: { $0.isBooted })
+    }
+
     private func mockShellInstance() {
         mockShell = Shell.mock()
         shell = mockShell

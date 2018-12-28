@@ -16,7 +16,7 @@ final class XcodeTests: XCTestCase {
 
         subject = Xcode(shell: shell)
     }
-    
+
     override func tearDown() {
         super.tearDown()
         shell = Shell()

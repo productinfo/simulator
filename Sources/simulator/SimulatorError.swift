@@ -1,6 +1,6 @@
 import Foundation
 
-public enum SimulatorError: Error {
+public enum SimulatorError: Error, CustomStringConvertible {
     /// Thrown the underlying command doesn't return any output.
     case noOutput
 
@@ -30,4 +30,38 @@ public enum SimulatorError: Error {
 
     /// Thrown when a command exits unsuccessfully
     case shellError(String?)
+
+    /// Thrown when the method times out.
+    case timeoutError
+
+    public var description: String {
+        switch self {
+        case .noOutput:
+            return "The command returned no output"
+        case let .jsonSerialize(error):
+            return "Error serializing the JSON output: \(error)"
+        case let .jsonDecode(error):
+            return "Error decoding the JSON output: \(error)"
+        case .invalidFormat:
+            return "Unexpected output format"
+        case .deviceTypeNotFound:
+            return "Device type not found"
+        case .runtimeNotFound:
+            return "Runtime not found"
+        case .runtimeProfileNotFound:
+            return "Runtime profile not found"
+        case .invalidLaunchCtlListOutput:
+            return "Invalid launchctl output"
+        case .xcodeNotFound:
+            return "Xcode not found running xcode-select"
+        case let .shellError(error):
+            if let error = error {
+                return "Error running command: \(error)"
+            } else {
+                return "Error running command"
+            }
+        case .timeoutError:
+            return "Timeout error"
+        }
+    }
 }

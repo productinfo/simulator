@@ -4,31 +4,34 @@ import Foundation
 public struct Device: Decodable, Equatable {
     /// A string that summarizes the device availability.
     /// Example: (unavailable, runtime profile not found)
-    public let availability: String
+    public private(set) var availability: String
 
     /// True if the device is available.
-    public let isAvailable: Bool?
+    public private(set) var isAvailable: Bool?
 
     /// A string that represents the state of the device.
     /// Example: Shutdown
-    public let state: String
+    public private(set) var state: String
 
     /// The name of the device.
     /// Example: Apple TV 4K
-    public let name: String
+    public private(set) var name: String
 
     /// Device unique identifier.
     /// Example: B9AC1102-025F-4921-B39D-45E18D484FC4
-    public let udid: String
+    public private(set) var udid: String
 
     /// When the device is not available, this string contains
     /// a description of why the device is not available.
     /// If the device is available, this string is empty.
-    public let availabilityError: String?
+    public private(set) var availabilityError: String?
 
     /// Name of the device runtime.
     /// Example: iOS 12.1
-    public let runtimeName: String
+    public private(set) var runtimeName: String
+
+    /// True if the device is booted.
+    public var isBooted: Bool { return state == "Booted" }
 
     /// Coding keys
     enum CodingKeys: String, CodingKey {
@@ -115,9 +118,10 @@ public struct Device: Decodable, Equatable {
     ///
     /// - Returns: True if the device was killed.
     /// - Throws: An error if any of the underlying commands fails.
+    @discardableResult
     public func kill() throws -> Bool {
-        let argument = "xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
-        let result = try shell.capture(["/bin/ps", argument])
+        let argument = "ps xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
+        let result = try shell.capture(["/bin/bash", "-c", argument])
         try result.throwIfFailed()
 
         guard let pid = Int(result.stdout!.chomp()) else {
@@ -261,6 +265,41 @@ public struct Device: Decodable, Equatable {
                 let label = String(components[2])
                 return Service(pid: pid, status: status, label: label)
             })
+    }
+
+    /// It reloads the device state until a certain condition is met.
+    ///
+    /// - Parameters:
+    ///   - timeout: Timeout period after which the method throws if the condition hasn't been met.
+    ///   - until: Condition that needs to be met in order fot the method to return.
+    /// - Throws: An error if the method times out.
+    public mutating func wait(timeout: TimeInterval = 30, until: (Device) -> Bool) throws {
+        let timeoutDate = Date().addingTimeInterval(timeout)
+
+        while true {
+            sleep(1)
+            try reload()
+            if until(self) {
+                break
+            } else if Date() > timeoutDate {
+                throw SimulatorError.timeoutError
+            }
+        }
+    }
+
+    /// Reloads the device's attributes and syncs them with the simctl output.
+    ///
+    /// - Throws: An error if the device can't be obtained from simctl.
+    public mutating func reload() throws {
+        let list = try Device.list()
+        guard let device = list.first(where: { $0.udid == udid }) else { return }
+        availability = device.availability
+        state = device.state
+        isAvailable = device.isAvailable
+        name = device.name
+        udid = device.udid
+        availabilityError = device.availabilityError
+        runtimeName = device.runtimeName
     }
 
     // MARK: - Internal
