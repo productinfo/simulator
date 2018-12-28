@@ -9,6 +9,6 @@ let project = Project(name: "Simulator-Carthage",
                                  infoPlist: "Info.plist",
                                  sources: "Sources/Simulator/**",
                                  dependencies: [
-                                     .framework(path: "Carthage/Build/Mac/SwiftShell.framework"),
+                                     .framework(path: "Carthage/Build/Mac/Shell.framework"),
                           ]),
 ])

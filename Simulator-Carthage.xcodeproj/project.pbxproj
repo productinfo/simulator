@@ -9,12 +9,12 @@
 /* Begin PBXBuildFile section */
 		BF_017E403BB5B6D4C67FFA25B9848ABAB6 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR_2BD0009C796D4734034F38B36FD23471 /* Device.swift */; settings = {}; };
 		BF_3EBEC57833487525663EBEEFDB194CF2 /* String+Extras.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR_12D246B5F1B2D14D15DFAF924AA96DAC /* String+Extras.swift */; settings = {}; };
-		BF_508A693080F2BE1BABADD07D3E4203FE /* SwiftShell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FR_066EC02A5F733F11D8C558B9A16EFA5F /* SwiftShell.framework */; };
 		BF_5674ABD61E72589B8FE95C127A16406C /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR_E14F810A92FFE9C93653CEF3F2E8F5A0 /* Project.swift */; };
 		BF_61ECB09C5DE46480EDC0EDDB7AB9CD14 /* Xcode.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR_CB88DCC06FC24C4C41C2B04DD1D874C5 /* Xcode.swift */; settings = {}; };
 		BF_686FDC7CDD4A524143633D50B3FA3B25 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR_82611CAB46ED78480384F2CFC866E805 /* Service.swift */; settings = {}; };
 		BF_87E2BA6A03131D787EE60BCB7178AD49 /* Shell+Extras.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR_0E244C34D76DFC96DDC668A7BAC8C326 /* Shell+Extras.swift */; settings = {}; };
 		BF_9D10F6E7BB0DAD739F74D7890728E3EF /* Runtime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR_FE4EBF91E4697DF107CD0D49B5823489 /* Runtime.swift */; settings = {}; };
+		BF_A9CFB7C045B8715FA13C990D5FF3CAED /* Shell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FR_1E542E90E5B68D4EF85019C0DEDF12AC /* Shell.framework */; };
 		BF_D7C80BD4B66BAA5C79CCE38792BB5D41 /* SimulatorError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FR_AF434FA05760E7001D0CCEB23E10625B /* SimulatorError.swift */; settings = {}; };
 /* End PBXBuildFile section */
 
@@ -31,9 +31,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		FR_066EC02A5F733F11D8C558B9A16EFA5F /* SwiftShell.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftShell.framework; sourceTree = "<group>"; };
 		FR_0E244C34D76DFC96DDC668A7BAC8C326 /* Shell+Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shell+Extras.swift"; sourceTree = "<group>"; };
 		FR_12D246B5F1B2D14D15DFAF924AA96DAC /* String+Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extras.swift"; sourceTree = "<group>"; };
+		FR_1E542E90E5B68D4EF85019C0DEDF12AC /* Shell.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Shell.framework; sourceTree = "<group>"; };
 		FR_2BD0009C796D4734034F38B36FD23471 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		FR_82611CAB46ED78480384F2CFC866E805 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
 		FR_993F3D981ECBDDBE6537A1C4DA72CDB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -50,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF_508A693080F2BE1BABADD07D3E4203FE /* SwiftShell.framework in Frameworks */,
+				BF_A9CFB7C045B8715FA13C990D5FF3CAED /* Shell.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +88,7 @@
 		G_9983977E8FACDC783F604B21050F66AE /* Mac */ = {
 			isa = PBXGroup;
 			children = (
-				FR_066EC02A5F733F11D8C558B9A16EFA5F /* SwiftShell.framework */,
+				FR_1E542E90E5B68D4EF85019C0DEDF12AC /* Shell.framework */,
 			);
 			path = Mac;
 			sourceTree = "<group>";
