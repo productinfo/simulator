@@ -19,7 +19,7 @@
         <a class='header-link' href='index.html'>
           Simulator Docs
         </a>
-         (78% documented)
+         (92% documented)
       </p>
     
         <p class='header-col header-col--secondary'>
@@ -102,26 +102,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Simulator errors.</p>
-
-<ul>
-<li>noOutput: Thrown the underlying command doesn&rsquo;t return any output.</li>
-<li>shell: Thrown when the underlying command fails.</li>
-<li>jsonSerialize: Thrown when the JSON output cannot be parsed.</li>
-<li>jsonDecode: Thrown when the JSON output cannot be decoded.</li>
-<li>invalidFormat: Thrown when the command output has an invalid/unexpected output.</li>
-<li>deviceTypeNotFound: Thrown when a device type cannot be obtained.</li>
-<li>runtimeNotFound: Thrown when a device runtime cannot be found.</li>
-<li>runtimeProfileNotFound: Thrown when the simulator runtime profile cannot be found.</li>
-<li>invalidLaunchCtlListOutput: Thrown when the output from the launchtl list command cannot be parsed.</li>
-</ul>
+                        <p>Undocumented</p>
 
                       </div>
                       <div class="declaration">
                         <h5>Declaration</h5>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">SimulatorError</span> <span class="p">:</span> <span class="kt">Error</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">SimulatorError</span> <span class="p">:</span> <span class="kt">Error</span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
 
                         </div>
                       </div>

@@ -4,6 +4,8 @@ Please, check out guidelines: https://keepachangelog.com/en/1.0.0/
 
 ## next version
 
+## 0.4.0
+
 ### Changed
 
 - Replace SwiftShell with Shell https://github.com/tuist/simulator/pull/10 by @pepibumur

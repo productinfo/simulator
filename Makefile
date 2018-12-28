@@ -1,4 +1,4 @@
 release-check:
-	swift build -c release
+	swift build
 	swift test
 	xcodebuild build -scheme Simulator -project Simulator-Carthage.xcodeproj

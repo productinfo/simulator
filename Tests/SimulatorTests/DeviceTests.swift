@@ -68,7 +68,6 @@ final class DeviceTests: XCTestCase {
     func test_services() throws {
         let device = try iPhoneDevice()
         let services = try device.services()
-        try print(device.runtimePath())
         XCTAssertTrue(services.contains(where: { $0.label == "com.apple.storeagent.daemon" }))
         XCTAssertNotEqual(services.count, 0)
     }

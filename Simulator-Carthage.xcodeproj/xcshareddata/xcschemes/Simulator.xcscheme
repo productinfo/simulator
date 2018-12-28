@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "58C414A72267A514751EFCD35CBCB952"
+               BlueprintIdentifier = "NT_95B880042DC2E507A742D64D66266ED2"
                BuildableName = "Simulator.framework"
                BlueprintName = "Simulator"
                ReferencedContainer = "container:Simulator-Carthage.xcodeproj">

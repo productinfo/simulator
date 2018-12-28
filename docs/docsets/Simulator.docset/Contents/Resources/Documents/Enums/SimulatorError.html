@@ -19,7 +19,7 @@
         <a class='header-link' href='../index.html'>
           Simulator Docs
         </a>
-         (78% documented)
+         (92% documented)
       </p>
     
         <p class='header-col header-col--secondary'>
@@ -82,23 +82,11 @@
             <h1>SimulatorError</h1>
               <div class='declaration'>
                 <div class='language'>
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">SimulatorError</span> <span class="p">:</span> <span class="kt">Error</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">SimulatorError</span> <span class="p">:</span> <span class="kt">Error</span><span class="p">,</span> <span class="kt">CustomStringConvertible</span></code></pre>
 
                 </div>
               </div>
-            <p>Simulator errors.</p>
-
-<ul>
-<li>noOutput: Thrown the underlying command doesn&rsquo;t return any output.</li>
-<li>shell: Thrown when the underlying command fails.</li>
-<li>jsonSerialize: Thrown when the JSON output cannot be parsed.</li>
-<li>jsonDecode: Thrown when the JSON output cannot be decoded.</li>
-<li>invalidFormat: Thrown when the command output has an invalid/unexpected output.</li>
-<li>deviceTypeNotFound: Thrown when a device type cannot be obtained.</li>
-<li>runtimeNotFound: Thrown when a device runtime cannot be found.</li>
-<li>runtimeProfileNotFound: Thrown when the simulator runtime profile cannot be found.</li>
-<li>invalidLaunchCtlListOutput: Thrown when the output from the launchtl list command cannot be parsed.</li>
-</ul>
+            <p>Undocumented</p>
 
           </div>
         </section>
@@ -120,7 +108,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Thrown the underlying command doesn&rsquo;t return any output.</p>
 
                       </div>
                       <div class="declaration">
@@ -150,7 +138,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Thrown when the JSON output cannot be parsed.</p>
 
                       </div>
                       <div class="declaration">
@@ -180,7 +168,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Thrown when the JSON output cannot be decoded.</p>
 
                       </div>
                       <div class="declaration">
@@ -210,7 +198,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Thrown when the command output has an invalid/unexpected output.</p>
 
                       </div>
                       <div class="declaration">
@@ -240,7 +228,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Thrown when a device type cannot be obtained.</p>
 
                       </div>
                       <div class="declaration">
@@ -270,7 +258,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Thrown when a device runtime cannot be found.</p>
 
                       </div>
                       <div class="declaration">
@@ -300,7 +288,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Thrown when the simulator runtime profile cannot be found.</p>
 
                       </div>
                       <div class="declaration">
@@ -330,7 +318,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Thrown when the output from the launchtl list command cannot be parsed.</p>
 
                       </div>
                       <div class="declaration">
@@ -338,6 +326,125 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="k">case</span> <span class="n">invalidLaunchCtlListOutput</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div class="item-heading">
+                    <code>
+                    <a name="/s:9Simulator0A5ErrorO13xcodeNotFoundyA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/xcodeNotFound" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Simulator0A5ErrorO13xcodeNotFoundyA2CmF">xcodeNotFound</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Thrown when Xcode is not found using xcode-select</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h5>Declaration</h5>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">xcodeNotFound</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div class="item-heading">
+                    <code>
+                    <a name="/s:9Simulator0A5ErrorO05shellB0yACSSSgcACmF"></a>
+                    <a name="//apple_ref/swift/Element/shellError(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Simulator0A5ErrorO05shellB0yACSSSgcACmF">shellError(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Thrown when a command exits unsuccessfully</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h5>Declaration</h5>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="nf">shellError</span><span class="p">(</span><span class="kt">String</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div class="item-heading">
+                    <code>
+                    <a name="/s:9Simulator0A5ErrorO07timeoutB0yA2CmF"></a>
+                    <a name="//apple_ref/swift/Element/timeoutError" class="dashAnchor"></a>
+                    <a class="token" href="#/s:9Simulator0A5ErrorO07timeoutB0yA2CmF">timeoutError</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Thrown when the method times out.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h5>Declaration</h5>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">timeoutError</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div class="slightly-smaller">
+                        
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div class="item-heading">
+                    <code>
+                    <a name="/s:s23CustomStringConvertibleP11descriptionSSvp"></a>
+                    <a name="//apple_ref/swift/Property/description" class="dashAnchor"></a>
+                    <a class="token" href="#/s:s23CustomStringConvertibleP11descriptionSSvp">description</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h5>Declaration</h5>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">description</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
