@@ -16,8 +16,9 @@ final class DeviceTests: XCTestCase {
                         availabilityError: nil,
                         runtimeName: "Best Runtime")
 
-    override func setUp() {
-        super.setUp()
+    override func tearDown() {
+        super.tearDown()
+        shell = Shell()
     }
 
     func test_deviceType() throws {

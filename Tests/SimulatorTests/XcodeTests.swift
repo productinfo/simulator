@@ -16,6 +16,11 @@ final class XcodeTests: XCTestCase {
 
         subject = Xcode(shell: shell)
     }
+    
+    override func tearDown() {
+        super.tearDown()
+        shell = Shell()
+    }
 
     func test_runtimeProfilesPath() throws {
         mockShell.stub(["/usr/bin/xcode-select", "-p"], stdout: ["/xcode"], stder: [], code: 0)
