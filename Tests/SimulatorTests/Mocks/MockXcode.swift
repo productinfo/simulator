@@ -1,5 +1,4 @@
 import Foundation
-import SwiftShell
 
 @testable import Simulator
 

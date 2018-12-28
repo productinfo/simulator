@@ -13,5 +13,5 @@ Pod::Spec.new do |s|
 
   s.source_files = "Sources/**/*.{swift}"
 
-  s.dependency "SwiftShell", "4.1.2"
+  s.dependency "Shell", "0.2.0"
 end

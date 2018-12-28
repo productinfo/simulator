@@ -1,5 +1,5 @@
 import Foundation
-import SwiftShell
+import Shell
 
 /// This class represents a simctl runtime. In Xcode, a runtime is a pair of an OS and its version, for example iOS 12.1
 public struct Runtime: Decodable, Equatable {
@@ -87,11 +87,8 @@ public struct Runtime: Decodable, Equatable {
     /// - Throws: A SimulatorError if the runtimes cannot be fetched.
     public static func list() throws -> [Runtime] {
         let decoder = JSONDecoder()
-        let output = try Shell.shared.simctl(["list", "-j", "runtimes"])
-        if let error = output.error {
-            throw error
-        }
-        let data = output.stdout.data(using: .utf8) ?? Data()
+        let output = try shell.captureSimctl(["list", "-j", "runtimes"])
+        let data = output.data(using: .utf8) ?? Data()
         let json = try JSONSerialization.jsonObject(with: data, options: [])
         guard let dictionary = json as? [String: Any],
             let runtimes = dictionary["runtimes"] as? [[String: Any]] else {

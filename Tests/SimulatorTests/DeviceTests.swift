@@ -1,9 +1,13 @@
 import Foundation
-@testable import Simulator
+import Shell
+import ShellTesting
 import XCTest
 
+@testable import Simulator
+
 final class DeviceTests: XCTestCase {
-    var shell: MockShell!
+    var mockShell: MockShell!
+
     var device = Device(availability: "available",
                         state: "booted",
                         isAvailable: true,
@@ -12,9 +16,9 @@ final class DeviceTests: XCTestCase {
                         availabilityError: nil,
                         runtimeName: "Best Runtime")
 
-    override func setUp() {
-        super.setUp()
-        shell = MockShell()
+    override func tearDown() {
+        super.tearDown()
+        shell = Shell()
     }
 
     func test_deviceType() throws {
@@ -85,33 +89,24 @@ final class DeviceTests: XCTestCase {
         let got = try Device.list()
         XCTAssertNotEqual(got.count, 0)
     }
-    
+
     func testLaunch() throws {
-        Device.shell = shell
-        
-        let xcodePath = "/xcode/path"
-        shell.xcodePathStub = {
-            return xcodePath
-        }
-        
-        shell.openStub = { (arguments: [String]) in
-            XCTAssertEqual(arguments, ["-Fgn", "/xcode/path/Applications/Simulator.app", "--args","-CurrentDeviceUDID", self.device.udid])
-        }
-        
+        mockShellInstance()
+        mockShell.stub(["/usr/bin/xcode-select", "-p"], stdout: ["/xcode/path"], stder: [], code: 0)
+        mockShell.succeed(["/usr/bin/open", "-Fgn", "/xcode/path/Applications/Simulator.app", "--args", "-CurrentDeviceUDID", self.device.udid])
+
         try device.launch()
-        Device.shell = Shell.shared
     }
-    
+
     func testLaunchApp() throws {
-        Device.shell = shell
+        mockShellInstance()
         let bundleId = "best.app.ever"
-        
-        shell.xcrunStub = { (arguments: [String]) -> ShellOutput  in
-            XCTAssertEqual(arguments, ["launch", self.device.udid, bundleId])
-            return ShellOutput()
-        }
-        
+        mockShell.stub(["/usr/bin/xcrun", "simctl", "launch", self.device.udid, bundleId], stdout: ["/xcode/path"], stder: [], code: 0)
         try device.launchApp(bundleId)
-        Device.shell = Shell.shared
+    }
+
+    private func mockShellInstance() {
+        mockShell = Shell.mock()
+        shell = mockShell
     }
 }
