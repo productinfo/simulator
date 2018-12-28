@@ -3,7 +3,7 @@ Pod::Spec.new do |s|
   s.version          = "0.4.0"
   s.summary          = "Interact with the Xcode simulators"
   s.homepage         = "https://github.com/tuist/simulator"
-  s.social_media_url = 'https://twitter.com/tuistapp'
+  s.social_media_url = 'https://twitter.com/pepibumur'
   s.license          = 'MIT'
   s.source           = { :git => "https://github.com/tuist/simulator.git", :tag => s.version.to_s }
   s.requires_arc = true
