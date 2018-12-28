@@ -1,4 +1,5 @@
 import Foundation
+import Shell
 
 protocol Xcoding {
     /// Returns the path to the platform simulator SDK.
@@ -21,14 +22,14 @@ struct Xcode: Xcoding {
     // MARK: - Attributes
 
     /// Shell instance to run commands.
-    private let shell: Shelling
+    private let shell: Shell
 
     // MARK: - Init
 
     /// Initializes the Xcode instance.
     ///
     /// - Parameter shell: Shell instance to run commands on.
-    init(shell: Shelling = Shell.shared) {
+    init(shell: Shell = Shell()) {
         self.shell = shell
     }
 
@@ -41,8 +42,7 @@ struct Xcode: Xcoding {
         guard let device = devicePlatform(platform: platform) else {
             return nil
         }
-        let path = try URL(fileURLWithPath: shell.xcodePath(), isDirectory: true)
-        return path.appendingPathComponent("Platforms/\(device).platform/Developer/Library/CoreSimulator/Profiles/Runtimes/")
+        return try shell.xcodePath().appendingPathComponent("Platforms/\(device).platform/Developer/Library/CoreSimulator/Profiles/Runtimes/")
     }
 
     /// Returns the path where the platform simulator runtimes are located.
@@ -54,8 +54,7 @@ struct Xcode: Xcoding {
         guard let simulator = simulatorPlatform(platform: platform) else {
             return nil
         }
-        let path = try URL(fileURLWithPath: shell.xcodePath(), isDirectory: true)
-        return path.appendingPathComponent("Platforms/\(simulator).platform/Developer/SDKs/\(simulator).sdk/")
+        return try shell.xcodePath().appendingPathComponent("Platforms/\(simulator).platform/Developer/SDKs/\(simulator).sdk/")
     }
 
     /// Given a platform, it returns the name of the simulator platform to look it up in the Developer/Platforms directory.

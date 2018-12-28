@@ -1,19 +1,24 @@
 import Foundation
-@testable import Simulator
+import Shell
+import ShellTesting
 import XCTest
 
+@testable import Simulator
+
 final class XcodeTests: XCTestCase {
-    var shell: MockShell!
     var subject: Xcode!
+    var mockShell: MockShell!
 
     override func setUp() {
         super.setUp()
-        shell = MockShell()
+        mockShell = Shell.mock()
+        shell = mockShell
+
         subject = Xcode(shell: shell)
     }
 
     func test_runtimeProfilesPath() throws {
-        shell.xcodePathStub = { "/xcode" }
+        mockShell.stub(["/usr/bin/xcode-select", "-p"], stdout: ["/xcode"], stder: [], code: 0)
         guard let got = try subject.runtimeProfilesPath(platform: .iOS) else {
             XCTFail("Expected simulatorSDKPath to return a value")
             return
@@ -26,7 +31,7 @@ final class XcodeTests: XCTestCase {
     }
 
     func test_simulatorSDKPath() throws {
-        shell.xcodePathStub = { "/xcode" }
+        mockShell.stub(["/usr/bin/xcode-select", "-p"], stdout: ["/xcode"], stder: [], code: 0)
         guard let got = try subject.simulatorSDKPath(platform: .iOS) else {
             XCTFail("Expected simulatorSDKPath to return a value")
             return

@@ -8,16 +8,16 @@ let package = Package(
         .library(name: "Simulator", type: .dynamic, targets: ["Simulator"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/kareman/SwiftShell.git", .upToNextMinor(from: "4.1.2")),
+        .package(url: "https://github.com/tuist/Shell.git", .upToNextMinor(from: "0.2.0")),
     ],
     targets: [
         .target(
             name: "Simulator",
-            dependencies: ["SwiftShell"]
+            dependencies: ["Shell"]
         ),
         .testTarget(
             name: "SimulatorTests",
-            dependencies: ["Simulator"]
+            dependencies: ["Simulator", "ShellTesting"]
         ),
     ]
 )

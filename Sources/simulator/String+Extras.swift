@@ -1,10 +1,4 @@
-/*
- This source file is part of the Swift.org open source project
- Copyright (c) 2014 - 2017 Apple Inc. and the Swift project authors
- Licensed under Apache License v2.0 with Runtime Library Exception
- See http://swift.org/LICENSE.txt for license information
- See http://swift.org/CONTRIBUTORS.txt for Swift project authors
- */
+// https://github.com/apple/swift-package-manager/blob/ad69efd093c6bdfbfa8cac143959f0bb6c43f0c4/Sources/Utility/StringExtensions.swift
 
 extension String {
     /**
@@ -12,7 +6,7 @@ extension String {
      all trailing \n (UNIX) or all trailing \r\n (Windows) (it will
      not remove mixed occurrences of both separators.
      */
-    public func spm_chomp(separator: String? = nil) -> String {
+    public func chomp(separator: String? = nil) -> String {
         func scrub(_ separator: String) -> String {
             var E = endIndex
             while String(self[startIndex ..< E]).hasSuffix(separator) && E > startIndex {
@@ -41,7 +35,7 @@ extension String {
 
      return userInput.chuzzle() ?? "default value"
      */
-    public func spm_chuzzle() -> String? {
+    public func chuzzle() -> String? {
         var cc = self
 
         loop: while true {
