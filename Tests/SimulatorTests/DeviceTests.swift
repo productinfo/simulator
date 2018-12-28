@@ -21,6 +21,11 @@ final class DeviceTests: XCTestCase {
         shell = Shell()
     }
 
+    func test_runtimePlatform() throws {
+        let device = try iPhoneDevice()
+        XCTAssertEqual(try device.runtimePlatform(), .iOS)
+    }
+
     func test_deviceType() throws {
         let device = try iPhoneDevice()
         let deviceType = try device.deviceType()

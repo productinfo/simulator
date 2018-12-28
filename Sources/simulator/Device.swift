@@ -98,6 +98,14 @@ public struct Device: Decodable, Equatable {
         return devices
     }
 
+    /// Returns the device runtime platform.
+    ///
+    /// - Returns: Device runtime platform.
+    /// - Throws: An error if the runtime can't be obtained.
+    public func runtimePlatform() throws -> Runtime.Platform {
+        return try runtime().platform
+    }
+
     /// Launches the device.
     ///
     /// - Throws: An error if the device cannot be launched.
