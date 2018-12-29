@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "Simulator"
-  s.version          = "0.4.0"
+  s.version          = "0.5.0"
   s.summary          = "Interact with the Xcode simulators"
   s.homepage         = "https://github.com/tuist/simulator"
   s.social_media_url = 'https://twitter.com/pepibumur'
@@ -13,5 +13,5 @@ Pod::Spec.new do |s|
 
   s.source_files = "Sources/**/*.{swift}"
 
-  s.dependency "Shell", "0.2.0"
+  s.dependency "Shell", "~> 0.3.0"
 end

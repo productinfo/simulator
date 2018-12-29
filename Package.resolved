@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/tuist/Shell.git",
         "state": {
           "branch": null,
-          "revision": "b4488593ddb78ba9ebd7cb31e4e634e1f42bcddb",
-          "version": "0.2.0"
+          "revision": "79f86d49085d124eadfa2ddb7ef2dcf851002ba5",
+          "version": "0.3.0"
         }
       },
       {

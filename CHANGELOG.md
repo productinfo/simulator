@@ -4,6 +4,12 @@ Please, check out guidelines: https://keepachangelog.com/en/1.0.0/
 
 ## next version
 
+## 0.5.0
+
+### Changed
+
+- Pin the Shell dependency to a version up to the next minor.
+
 ## 0.4.0
 
 ### Changed
