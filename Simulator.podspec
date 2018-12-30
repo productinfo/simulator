@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "Simulator"
-  s.version          = "0.5.0"
+  s.version          = "0.5.1"
   s.summary          = "Interact with the Xcode simulators"
   s.homepage         = "https://github.com/tuist/simulator"
   s.social_media_url = 'https://twitter.com/pepibumur'
