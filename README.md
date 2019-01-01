@@ -37,6 +37,14 @@ github "tuist/simulator" ~> 0.5.1
 
 > Note: Simulator is only compatible with macOS
 
+### Using Marathon
+
+If you want to use Simulator in a [Marathon](https://github.com/johnsundell/marathon) script, either add it to your `Marathonfile` (see the Marathon repo for instructions on how to do that), or point Marathon to Simulator using the inline dependency syntax:
+
+```swift
+import Simulator // https://github.com/tuist/simulator.git
+```
+
 ## Usage 🚀
 
 **Devices**
