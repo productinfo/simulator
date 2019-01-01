@@ -8,7 +8,7 @@ let package = Package(
         .library(name: "Simulator", type: .dynamic, targets: ["Simulator"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/tuist/Shell.git", .upToNextMinor(from: "0.3.0")),
+        .package(url: "https://github.com/tuist/Shell.git", .upToNextMinor(from: "1.0.1")),
     ],
     targets: [
         .target(

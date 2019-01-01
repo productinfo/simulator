@@ -1,5 +1,6 @@
 import Foundation
 import Shell
+import Result
 
 var shell = Shell()
 
@@ -12,7 +13,7 @@ extension Shell {
         var arguments = arguments
         arguments.insert("/usr/bin/open", at: 0)
 
-        try sync(arguments).throwIfFailed()
+        try sync(arguments).dematerialize()
     }
 
     /// Returns the path to Xcode.
@@ -21,8 +22,7 @@ extension Shell {
     /// - Throws: A SimulatorError if Xcode can't be found in the system.
     func xcodePath() throws -> URL {
         let result = try capture(["/usr/bin/xcode-select", "-p"])
-        try result.throwIfFailed()
-        let path = result.stdout!.chomp()
+        let path = try result.dematerialize().chomp()
         return URL(fileURLWithPath: path, isDirectory: true)
     }
 
@@ -34,11 +34,7 @@ extension Shell {
     func captureSimctl(_ arguments: [String]) throws -> String {
         var arguments = arguments
         arguments.insert(contentsOf: ["/usr/bin/xcrun", "simctl"], at: 0)
-
-        let result = try capture(arguments)
-        try result.throwIfFailed()
-
-        return result.stdout!.chomp()
+        return try capture(arguments).dematerialize().chomp()
     }
 
     /// Runs the simctl command.
@@ -49,7 +45,6 @@ extension Shell {
         var arguments = arguments
         arguments.insert(contentsOf: ["/usr/bin/xcrun", "simctl"], at: 0)
 
-        let result = try sync(arguments)
-        try result.throwIfFailed()
+        try sync(arguments).dematerialize()
     }
 }

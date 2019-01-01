@@ -129,14 +129,10 @@ public struct Device: Decodable, Equatable {
     @discardableResult
     public func kill() throws -> Bool {
         let argument = "ps xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
-        let result = try shell.capture(["/bin/bash", "-c", argument])
-        try result.throwIfFailed()
-
-        guard let pid = Int(result.stdout!.chomp()) else {
+        guard let pid = Int(try shell.capture(["/bin/bash", "-c", argument]).dematerialize().chomp()) else {
             return false
         }
-        let killOutput = try shell.sync(["/bin/kill", "\(pid)"])
-        return killOutput.code == 0
+        return shell.sync(["/bin/kill", "\(pid)"]).error != nil
     }
 
     /// Installs the given app on the device.
@@ -261,9 +257,7 @@ public struct Device: Decodable, Equatable {
     /// - Returns: List of services.
     /// - Throws: An error if the launchctl path cannot be obatined or the output is invalid.
     public func services() throws -> [Service] {
-        let output = try shell.capture([try launchCtlPath().path, "list"])
-        try output.throwIfFailed()
-        return try output.stdout!.split(separator: "\n")
+        return try shell.capture([try launchCtlPath().path, "list"]).dematerialize().split(separator: "\n")
             .dropFirst()
             .compactMap({ (line) -> Service? in
                 let components = line.split(separator: "\t")
