@@ -4,6 +4,10 @@ Please, check out guidelines: https://keepachangelog.com/en/1.0.0/
 
 ## next version
 
+### Changed
+
+- Bump Shell version to 1.0.1 https://github.com/tuist/simulator/pull/13 by @pepibumur
+
 ## 0.5.1
 
 ### Fixed
