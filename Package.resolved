@@ -11,12 +11,21 @@
         }
       },
       {
+        "package": "Result",
+        "repositoryURL": "https://github.com/antitypical/Result.git",
+        "state": {
+          "branch": null,
+          "revision": "f5a5641043bdca66ec00ea349904505b6471365b",
+          "version": "4.0.1"
+        }
+      },
+      {
         "package": "Shell",
         "repositoryURL": "https://github.com/tuist/Shell.git",
         "state": {
           "branch": null,
-          "revision": "79f86d49085d124eadfa2ddb7ef2dcf851002ba5",
-          "version": "0.3.0"
+          "revision": "1f02ced46a3f12f9a1bbe6b5629be9de928fb658",
+          "version": "1.0.1"
         }
       },
       {
