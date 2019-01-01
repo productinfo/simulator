@@ -14,6 +14,11 @@ jobs:
           name: Fetch dependencies
           command: |
             carthage update --platform macos
+            bundle install
+      - run:
+          name: Lint Pod
+          command: |
+            bundle exec pod lib lint --verbose
       - run:
           name: Generate Xcode project
           command: |
