@@ -44,7 +44,7 @@ final class XcodeTests: XCTestCase {
         XCTAssertNil(got.value ?? nil)
     }
 
-    func test_devicePlatform() throws {
+    func test_devicePlatform() {
         XCTAssertEqual(subject.devicePlatform(platform: .iOS), "iPhoneOS")
         XCTAssertEqual(subject.devicePlatform(platform: .watchOS), "WatchOS")
         XCTAssertEqual(subject.devicePlatform(platform: .tvOS), "AppleTVOS")

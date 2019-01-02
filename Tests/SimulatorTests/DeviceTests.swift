@@ -65,7 +65,7 @@ final class DeviceTests: XCTestCase {
 
     func test_runtime() {
         let device = iPhoneDevice().value
-        XCTAssertNil(device?.runtime())
+        XCTAssertNil(device?.runtime().error)
     }
 
     func test_services() {
