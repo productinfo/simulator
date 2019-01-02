@@ -13,5 +13,6 @@ Pod::Spec.new do |s|
 
   s.source_files = "Sources/**/*.{swift}"
 
-  s.dependency "Shell", "~> 1.0.1"
+  s.dependency "Shell", "~> 1.0.2"
+  s.dependency "Result", "4.0.1"
 end

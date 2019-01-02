@@ -1,20 +1,20 @@
 import Foundation
+import Result
 import Shell
 
 protocol Xcoding {
-    /// Returns the path to the platform simulator SDK.
-    ///
-    /// - Parameter platform: Simulator platform.
-    /// - Returns: Path to the simulator SDK.
-    /// - Throws: An error if the path cannot be obtained.
-    func simulatorSDKPath(platform: Runtime.Platform) throws -> URL?
-
     /// Returns the path where the platform simulator runtimes are located.
     ///
     /// - Parameter platform: Platform whose runtime profiles will be returned.
     /// - Returns: Path to the simulator runtimes.
-    /// - Throws: An error if the path cannot be obtained.
-    func runtimeProfilesPath(platform: Runtime.Platform) throws -> URL?
+    /// - Returns: An error if the path cannot be obtained or a simulator error.
+    func simulatorSDKPath(platform: Runtime.Platform) -> Result<URL?, SimulatorError>
+
+    /// Returns the path to the platform simulator SDK.
+    ///
+    /// - Parameter platform: Simulator platform.
+    /// - Returns: A result with the path to the simulator SDK or a simulator error.
+    func runtimeProfilesPath(platform: Runtime.Platform) -> Result<URL?, SimulatorError>
 }
 
 /// Struct that provides some helper methods to read information from the Xcode environment.
@@ -36,25 +36,24 @@ struct Xcode: Xcoding {
     /// Returns the path to the platform simulator SDK.
     ///
     /// - Parameter platform: Simulator platform.
-    /// - Returns: Path to the simulator SDK.
-    /// - Throws: An error if the path cannot be obtained.
-    func runtimeProfilesPath(platform: Runtime.Platform) throws -> URL? {
+    /// - Returns: A result with the path to the simulator SDK or a simulator error.
+    func runtimeProfilesPath(platform: Runtime.Platform) -> Result<URL?, SimulatorError> {
         guard let device = devicePlatform(platform: platform) else {
-            return nil
+            return .success(nil)
         }
-        return try shell.xcodePath().appendingPathComponent("Platforms/\(device).platform/Developer/Library/CoreSimulator/Profiles/Runtimes/")
+        return shell.xcodePath().map({ $0.appendingPathComponent("Platforms/\(device).platform/Developer/Library/CoreSimulator/Profiles/Runtimes/") })
     }
 
     /// Returns the path where the platform simulator runtimes are located.
     ///
     /// - Parameter platform: Platform whose runtime profiles will be returned.
     /// - Returns: Path to the simulator runtimes.
-    /// - Throws: An error if the path cannot be obtained.
-    func simulatorSDKPath(platform: Runtime.Platform) throws -> URL? {
+    /// - Returns: An error if the path cannot be obtained or a simulator error.
+    func simulatorSDKPath(platform: Runtime.Platform) -> Result<URL?, SimulatorError> {
         guard let simulator = simulatorPlatform(platform: platform) else {
-            return nil
+            return .success(nil)
         }
-        return try shell.xcodePath().appendingPathComponent("Platforms/\(simulator).platform/Developer/SDKs/\(simulator).sdk/")
+        return shell.xcodePath().map({ $0.appendingPathComponent("Platforms/\(simulator).platform/Developer/SDKs/\(simulator).sdk/") })
     }
 
     /// Given a platform, it returns the name of the simulator platform to look it up in the Developer/Platforms directory.

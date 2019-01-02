@@ -1,4 +1,5 @@
 import Foundation
+import Result
 import Shell
 
 /// This class represents a simctl runtime. In Xcode, a runtime is a pair of an OS and its version, for example iOS 12.1
@@ -81,33 +82,55 @@ public struct Runtime: Decodable, Equatable {
             lhs.name == rhs.name
     }
 
-    /// Returns the lit of runtimes from the system.
+    /// Returns the list of runtimes from the system.
     ///
-    /// - Returns: List of runtimes.
-    /// - Throws: A SimulatorError if the runtimes cannot be fetched.
-    public static func list() throws -> [Runtime] {
+    /// - Returns: List or runtimes or a simulator error.
+    public static func list() -> Result<[Runtime], SimulatorError> {
         let decoder = JSONDecoder()
-        let output = try shell.captureSimctl(["list", "-j", "runtimes"])
-        let data = output.data(using: .utf8) ?? Data()
-        let json = try JSONSerialization.jsonObject(with: data, options: [])
-        guard let dictionary = json as? [String: Any],
-            let runtimes = dictionary["runtimes"] as? [[String: Any]] else {
-            throw SimulatorError.invalidFormat
+        let outputResult = shell.captureSimctl(["list", "-j", "runtimes"])
+        if outputResult.error != nil {
+            return outputResult.map({ _ in [] })
         }
-        let runtimesData = try JSONSerialization.data(withJSONObject: runtimes, options: [])
-        return try decoder.decode([Runtime].self, from: runtimesData)
+
+        let data = outputResult.value!.data(using: .utf8) ?? Data()
+        let jsonResult = Result {
+            try JSONSerialization.jsonObject(with: data, options: [])
+        }.mapError(SimulatorError.jsonSerialize)
+        if jsonResult.error != nil {
+            return jsonResult.map({ _ in [] })
+        }
+
+        guard let dictionary = jsonResult.value! as? [String: Any],
+            let runtimes = dictionary["runtimes"] as? [[String: Any]] else {
+            return .failure(.invalidFormat)
+        }
+
+        let runtimesDataResult = Result {
+            try JSONSerialization.data(withJSONObject: runtimes, options: [])
+        }.mapError(SimulatorError.jsonSerialize)
+        if runtimesDataResult.error != nil {
+            return runtimesDataResult.map({ _ in [] })
+        }
+
+        return Result {
+            try decoder.decode([Runtime].self, from: runtimesDataResult.value!)
+        }
     }
 
     /// Returns the latest runtime of a given platform.
     /// This is useful, for example, to determine the latest available runtime we can run our tests on.
     ///
     /// - Parameter platform: Platform whose latest runtime will be obtained.
-    /// - Returns: Latest available runtime.
-    /// - Throws: An error if the list of runtimes cannot be obtained.
-    public static func latest(platform: Platform) throws -> Runtime? {
-        return try list()
+    /// - Returns: Latest available runtime or a simulator error
+    public static func latest(platform: Platform) -> Result<Runtime?, SimulatorError> {
+        let listResult = list()
+        if listResult.error != nil {
+            return listResult.map({ _ in nil })
+        }
+        let runtime = listResult.value!
             .filter({ $0.platform == platform })
             .sorted(by: { $0.version < $1.version })
             .last
+        return .success(runtime)
     }
 }

@@ -21,101 +21,106 @@ final class DeviceTests: XCTestCase {
         shell = Shell()
     }
 
-    func test_runtimePlatform() throws {
-        let device = try iPhoneDevice()
-        XCTAssertEqual(try device.runtimePlatform(), .iOS)
+    func test_runtimePlatform() {
+        let device = iPhoneDevice()
+        XCTAssertEqual(device.value?.runtimePlatform().value, .iOS)
     }
 
-    func test_deviceType() throws {
-        let device = try iPhoneDevice()
-        let deviceType = try device.deviceType()
-        XCTAssertEqual(deviceType, "com.apple.CoreSimulator.SimDeviceType.iPhone-XR")
+    func test_deviceType() {
+        let device = iPhoneDevice()
+        let deviceType = device.value?.deviceType()
+        XCTAssertEqual(deviceType?.value, "com.apple.CoreSimulator.SimDeviceType.iPhone-XR")
     }
 
-    func test_globalPreferences() throws {
-        let device = try iPhoneDevice()
-        let globalPreferences = try device.globalPreferences()
-        XCTAssertTrue(globalPreferences.keys.contains("AppleLocale"))
-        XCTAssertTrue(globalPreferences.keys.contains("AppleLanguages"))
+    func test_globalPreferences() {
+        let device = iPhoneDevice()
+        let globalPreferences = device.value?.globalPreferences().value
+        XCTAssertEqual(globalPreferences?.keys.contains("AppleLocale"), true)
+        XCTAssertEqual(globalPreferences?.keys.contains("AppleLanguages"), true)
     }
 
-    func test_plist() throws {
-        let device = try iPhoneDevice()
-        let plist = try device.plist()
-        XCTAssertTrue(plist.keys.contains("deviceType"))
-        XCTAssertTrue(plist.keys.contains("runtime"))
-        XCTAssertTrue(plist.keys.contains("UDID"))
-        XCTAssertTrue(plist.keys.contains("name"))
-        XCTAssertTrue(plist.keys.contains("state"))
+    func test_plist() {
+        let device = iPhoneDevice()
+        let plist = device.value?.plist().value
+        XCTAssertEqual(plist?.keys.contains("deviceType"), true)
+        XCTAssertEqual(plist?.keys.contains("runtime"), true)
+        XCTAssertEqual(plist?.keys.contains("UDID"), true)
+        XCTAssertEqual(plist?.keys.contains("name"), true)
+        XCTAssertEqual(plist?.keys.contains("state"), true)
     }
 
-    func test_runtimePath() throws {
-        let device = try iPhoneDevice()
-        XCTAssertNoThrow(try device.runtimePath())
+    func test_runtimePath() {
+        let device = iPhoneDevice().value
+        XCTAssertNil(device?.runtimePath().error)
     }
 
-    func test_launchCtlPath() throws {
-        let device = try iPhoneDevice()
-        let path = try device.launchCtlPath()
-        XCTAssertTrue(FileManager.default.fileExists(atPath: path.path))
+    func test_launchCtlPath() {
+        let device = iPhoneDevice().value
+        guard let path = device?.launchCtlPath().value?.path else {
+            XCTFail("Could not obtain launchctl path")
+            return
+        }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: path))
     }
 
-    func test_runtime() throws {
-        let device = try iPhoneDevice()
-        XCTAssertNoThrow(try device.runtime())
+    func test_runtime() {
+        let device = iPhoneDevice().value
+        XCTAssertNil(device?.runtime())
     }
 
-    func test_services() throws {
-        let device = try iPhoneDevice()
-        let services = try device.services()
-        XCTAssertTrue(services.contains(where: { $0.label == "com.apple.storeagent.daemon" }))
-        XCTAssertNotEqual(services.count, 0)
+    func test_services() {
+        let device = iPhoneDevice().value
+        let services = device?.services().value
+        XCTAssertEqual(services?.contains(where: { $0.label == "com.apple.storeagent.daemon" }), true)
+        XCTAssertNotEqual(services?.count, 0)
     }
 
-    func test_globalPreferencesPlistPath() throws {
-        let device = try iPhoneDevice()
-        let got = device.globalPreferencesPlistPath()
-        XCTAssertEqual(got, device.homePath().appendingPathComponent("data/Library/Preferences/.GlobalPreferences.plist"))
+    func test_globalPreferencesPlistPath() {
+        let device = iPhoneDevice().value
+        let got = device?.globalPreferencesPlistPath()
+        XCTAssertEqual(got, device?.homePath().appendingPathComponent("data/Library/Preferences/.GlobalPreferences.plist"))
     }
 
-    func test_devicePlistPath() throws {
-        let device = try iPhoneDevice()
-        let got = device.devicePlistPath()
-        XCTAssertEqual(got, device.homePath().appendingPathComponent("device.plist"))
+    func test_devicePlistPath() {
+        let device = iPhoneDevice().value
+        let got = device?.devicePlistPath()
+        XCTAssertEqual(got, device?.homePath().appendingPathComponent("device.plist"))
     }
 
-    func test_homePath() throws {
-        let device = try iPhoneDevice()
-        XCTAssertEqual(device.homePath(), Device.devicesPath().appendingPathComponent(device.udid))
+    func test_homePath() {
+        let device = iPhoneDevice().value
+        XCTAssertNotNil(device)
+        XCTAssertEqual(device?.homePath(), Device.devicesPath().appendingPathComponent(device!.udid))
     }
 
-    func test_list_returns_a_non_empty_list() throws {
-        let got = try Device.list()
-        XCTAssertNotEqual(got.count, 0)
+    func test_list_returns_a_non_empty_list() {
+        let got = Device.list().value
+        XCTAssertNotEqual(got?.count, 0)
     }
 
-    func testLaunch() throws {
+    func testLaunch() {
         mockShellInstance()
         mockShell.stub(["/usr/bin/xcode-select", "-p"], stdout: ["/xcode/path"], stder: [], code: 0)
         mockShell.succeed(["/usr/bin/open", "-Fgn", "/xcode/path/Applications/Simulator.app", "--args", "-CurrentDeviceUDID", self.device.udid])
 
-        try device.launch()
+        XCTAssertNil(device.launch().error)
     }
 
-    func testLaunchApp() throws {
+    func testLaunchApp() {
         mockShellInstance()
         let bundleId = "best.app.ever"
         mockShell.stub(["/usr/bin/xcrun", "simctl", "launch", self.device.udid, bundleId], stdout: ["/xcode/path"], stder: [], code: 0)
-        try device.launchApp(bundleId)
+        XCTAssertNil(device.launchApp(bundleId).error)
     }
 
-    func test_wait() throws {
-        var device = try iPhoneDevice()
-        if device.isBooted {
-            _ = try device.kill()
+    func test_wait() {
+        var device = iPhoneDevice().value
+        if device?.isBooted == true {
+            _ = device?.kill()
         }
-        try device.launch()
-        try device.wait(until: { $0.isBooted })
+        _ = device?.launch()
+        let got = device?.wait(until: { $0.isBooted })
+        XCTAssertNil(got?.error)
     }
 
     private func mockShellInstance() {

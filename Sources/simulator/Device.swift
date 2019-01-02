@@ -1,4 +1,6 @@
 import Foundation
+import Result
+import Shell
 
 /// Model that represents a device returned by simctl.
 public struct Device: Decodable, Equatable {
@@ -74,145 +76,168 @@ public struct Device: Decodable, Equatable {
 
     /// Gets the list of devices from the system.
     ///
-    /// - Returns: List of devices.
-    /// - Throws: An error if the simctl command fails.
-    public static func list() throws -> [Device] {
+    /// - Returns: A result with the list of devices or a simulator error.
+    public static func list() -> Result<[Device], SimulatorError> {
         let decoder = JSONDecoder()
-        let output = try shell.captureSimctl(["list", "-j", "devices"])
+        let outputResult = shell.captureSimctl(["list", "-j", "devices"])
+        if outputResult.error != nil {
+            return outputResult.map({ _ in [] })
+        }
 
-        let data = output.data(using: .utf8) ?? Data()
-        let json = try JSONSerialization.jsonObject(with: data, options: [])
-        guard let dictionary = json as? [String: Any],
+        let data = outputResult.value!.data(using: .utf8) ?? Data()
+        let jsonResult = Result {
+            try JSONSerialization.jsonObject(with: data, options: [])
+        }.mapError(SimulatorError.jsonSerialize)
+        if jsonResult.error != nil {
+            return jsonResult.map({ _ in [] })
+        }
+
+        guard let dictionary = jsonResult.value! as? [String: Any],
             let runtimes = dictionary["devices"] as? [String: [[String: Any]]] else {
-            throw SimulatorError.invalidFormat
+            return .failure(.invalidFormat)
         }
-        let devices = try runtimes.reduce(into: [Device]()) { devices, runtimeAndDevices in
-            let (runtime, deviceDictionaries) = runtimeAndDevices
-            try deviceDictionaries.forEach { deviceDictionary in
-                var deviceDictionary = deviceDictionary
-                deviceDictionary["runtimeName"] = runtime
-                let deviceData = try JSONSerialization.data(withJSONObject: deviceDictionary, options: [])
-                devices.append(try decoder.decode(Device.self, from: deviceData))
+        return Result {
+            try runtimes.reduce(into: [Device]()) { devices, runtimeAndDevices in
+                let (runtime, deviceDictionaries) = runtimeAndDevices
+                try deviceDictionaries.forEach { deviceDictionary in
+                    var deviceDictionary = deviceDictionary
+                    deviceDictionary["runtimeName"] = runtime
+                    let deviceData = try JSONSerialization.data(withJSONObject: deviceDictionary, options: [])
+                    devices.append(try decoder.decode(Device.self, from: deviceData))
+                }
             }
-        }
-        return devices
+        }.mapError(SimulatorError.jsonDecode)
     }
 
     /// Returns the device runtime platform.
     ///
-    /// - Returns: Device runtime platform.
-    /// - Throws: An error if the runtime can't be obtained.
-    public func runtimePlatform() throws -> Runtime.Platform {
-        return try runtime().platform
+    /// - Returns: Device runtime platform or simulator error.
+    public func runtimePlatform() -> Result<Runtime.Platform, SimulatorError> {
+        return runtime().map({ $0.platform })
     }
 
     /// Launches the device.
     ///
-    /// - Throws: An error if the device cannot be launched.
-    public func launch() throws {
-        try shell.open(["-Fgn", "\(shell.xcodePath().path)/Applications/Simulator.app", "--args", "-CurrentDeviceUDID", udid])
+    /// - Returns: A result with an error if the device cannot be launched.
+    public func launch() -> Result<Void, SimulatorError> {
+        let xcodePathResult = shell.xcodePath()
+        if xcodePathResult.error != nil {
+            return xcodePathResult.map({ _ in () })
+        }
+        return shell.open(["-Fgn", "\(xcodePathResult.value!.path)/Applications/Simulator.app", "--args", "-CurrentDeviceUDID", udid])
     }
 
     /// Launches the given app from the device.
     ///
-    /// - Parameters:
-    ///   - bundleIdentifier: The app bundle identifier.
-    /// - Throws: An error if the app cannot be launched.
-    public func launchApp(_ bundleIdentifier: String) throws {
-        try shell.runSimctl(["launch", udid, bundleIdentifier])
+    /// - Parameter bundleIdentifier: The app bundle identifier.
+    /// - Returns: A result with an error if the app could not be launched.
+    public func launchApp(_ bundleIdentifier: String) -> Result<Void, SimulatorError> {
+        return shell.runSimctl(["launch", udid, bundleIdentifier])
     }
 
     /// Kills the device. It findes the process associated to it and kills it.
     ///
     /// - Returns: True if the device was killed.
-    /// - Throws: An error if any of the underlying commands fails.
+    /// = Returns: A result with a boolean that indicates whether the device has been killed or not, or a simulator error.
     @discardableResult
-    public func kill() throws -> Bool {
+    public func kill() -> Result<Bool, SimulatorError> {
         let argument = "ps xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
-        guard let pid = Int(try shell.capture(["/bin/bash", "-c", argument]).dematerialize().chomp()) else {
-            return false
+        let killResult = shell.capture(["/bin/bash", "-c", argument])
+        if killResult.error != nil {
+            return killResult.map({ _ in false }).mapError(SimulatorError.shell)
         }
-        return shell.sync(["/bin/kill", "\(pid)"]).error != nil
+
+        guard let pid = Int(killResult.value!.chomp()) else {
+            return .success(false)
+        }
+        return shell.sync(["/bin/kill", "\(pid)"]).map({ _ in true }).mapError(SimulatorError.shell)
     }
 
     /// Installs the given app on the device.
     ///
-    /// - Parameters:
-    ///   - path: Path to the app bundle (with .app extension)
-    /// - Throws: An error if the app cannot be installed
-    public func install(_ path: URL) throws {
-        try shell.runSimctl(["install", udid, path.path])
+    /// - Parameter path: Path to the app bundle (with .app extension)
+    /// - Returns: A result with an error if the app can't be installed.
+    public func install(_ path: URL) -> Result<Void, SimulatorError> {
+        return shell.runSimctl(["install", udid, path.path])
     }
 
     /// Uninstalls the given app from the device.
     ///
     /// - Parameters:
     ///   - bundleIdentifier: The app bundle identifier.
-    /// - Throws: An error if the app cannot be uninstalled.
-    func uninstall(_ bundleIdentifier: String) throws {
-        try shell.runSimctl(["uninstall", udid, bundleIdentifier])
+    /// - Returns: A result with an error if the app can't be uninstalled.
+    func uninstall(_ bundleIdentifier: String) -> Result<Void, SimulatorError> {
+        return shell.runSimctl(["uninstall", udid, bundleIdentifier])
     }
 
     /// Erases the device content.
     ///
-    /// - Throws: An error if the device cannot be erased.
-    func erase() throws {
-        try shell.runSimctl(["erase", udid])
+    /// - Returns: A result with an error if the simulator can't be erased.
+    func erase() -> Result<Void, SimulatorError> {
+        return shell.runSimctl(["erase", udid])
     }
 
     /// Returns the type of device reading the value from the device plist file.
     ///
-    /// - Returns: Device type.
-    /// - Throws: Throws a DeviceError.deviceTypeNotFound if the device plist can't be read, the deviceType attribute is missing or it has the wrong type.
-    public func deviceType() throws -> String {
-        guard let deviceType = try plist()["deviceType"] as? String else {
-            throw SimulatorError.deviceTypeNotFound
-        }
-        return deviceType
+    /// - Returns: The device type or an error if the device plist cannot be opened or the device type is missing.
+    public func deviceType() -> Result<String, SimulatorError> {
+        return plist().flatMap({ (content) -> Result<String, SimulatorError> in
+            guard let deviceType = content["deviceType"] as? String else {
+                return .failure(.deviceTypeNotFound)
+            }
+            return .success(deviceType)
+        })
     }
 
     /// Returns the device runtime identifier.
     ///
-    /// - Returns: Device runtime identifier.
-    /// - Throws: An error if the device plist cannot be opened or the runtime identifier is missing.
-    public func runtimeIdentifier() throws -> String {
-        guard let deviceType = try plist()["runtime"] as? String else {
-            throw SimulatorError.runtimeNotFound
-        }
-        return deviceType
+    /// - Returns: The device runtime identifier or an error if the device plist cannot be opened or the runtime identifier is missing.
+    public func runtimeIdentifier() -> Result<String, SimulatorError> {
+        return plist().flatMap({ (content) -> Result<String, SimulatorError> in
+            guard let runtime = content["runtime"] as? String else {
+                return .failure(.runtimeNotFound)
+            }
+            return .success(runtime)
+        })
     }
 
     /// Returns the device global preferences.
     ///
-    /// - Returns: Device global preferences.
-    /// - Throws: If the file cannot be read or has an invalid format.
-    public func globalPreferences() throws -> [String: Any] {
-        let data = try Data(contentsOf: globalPreferencesPlistPath())
-        return try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as! [String: Any]
+    /// - Returns: Device global preferences or a simulator error.
+    public func globalPreferences() -> Result<[String: Any], SimulatorError> {
+        return Result {
+            let data = try Data(contentsOf: globalPreferencesPlistPath())
+            return try PropertyListSerialization.propertyList(from: data, options: [], format: nil) as! [String: Any]
+        }.mapError(SimulatorError.plistSerialize)
     }
 
     /// Returns the  device device.plist content.
     ///
-    /// - Returns: Device.plist content.
-    /// - Throws: An error if the file cannot be read or has an invalid format.
-    public func plist() throws -> [String: Any] {
-        let data = try Data(contentsOf: devicePlistPath())
-        let plist = try PropertyListSerialization.propertyList(from: data,
-                                                               options: [],
-                                                               format: nil) as! [String: Any]
-        return plist
+    /// - Returns: The device  plist  content or a simulator error.
+    public func plist() -> Result<[String: Any], SimulatorError> {
+        return Result {
+            let data = try Data(contentsOf: devicePlistPath())
+            return try PropertyListSerialization.propertyList(from: data,
+                                                              options: [],
+                                                              format: nil) as! [String: Any]
+        }.mapError(SimulatorError.plistSerialize)
     }
 
     /// Returns the device runtime.
     ///
-    /// - Returns: Device runtime.
-    /// - Throws: A SimulatorError if the runtime cannot be obtained.
-    public func runtime() throws -> Runtime {
-        let runtimeIdentifier = try self.runtimeIdentifier()
-        guard let runtime = try Runtime.list().first(where: { $0.identifier == runtimeIdentifier }) else {
-            throw SimulatorError.runtimeNotFound
+    /// - Returns: Result with the runtime or a simulator error.
+    public func runtime() -> Result<Runtime, SimulatorError> {
+        let runtimeIdentifierResult = runtimeIdentifier()
+        if runtimeIdentifierResult.error != nil {
+            return .failure(runtimeIdentifierResult.error!)
         }
-        return runtime
+
+        return Runtime.list().flatMap { (list) -> Result<Runtime, SimulatorError> in
+            guard let runtime = list.first(where: { $0.identifier == runtimeIdentifierResult.value! }) else {
+                return .failure(.runtimeNotFound)
+            }
+            return .success(runtime)
+        }
     }
 
     /// Return the path to the global preferences plist fine.
@@ -238,63 +263,77 @@ public struct Device: Decodable, Equatable {
 
     /// Returns the runtime path.
     ///
-    /// - Returns: Runtime path.
-    /// - Throws: An error if the path cannot be obtained.
-    public func runtimePath() throws -> URL {
-        return try runtimePath(xcode: Xcode())
+    /// - Returns: Runtime path or a simulator error.
+    public func runtimePath() -> Result<URL, SimulatorError> {
+        return runtimePath(xcode: Xcode())
     }
 
     /// Returns the path to the runtime launchctl binary.
     ///
-    /// - Returns: Path to the launchctl binary.
-    /// - Throws: An error if it can't be found.
-    public func launchCtlPath() throws -> URL {
-        return try runtimePath().appendingPathComponent("bin/launchctl")
+    /// - Returns: Path to the launchctl binary or a simulator error.
+    public func launchCtlPath() -> Result<URL, SimulatorError> {
+        return runtimePath().map({ $0.appendingPathComponent("bin/launchctl") })
     }
 
     /// Returns all the services that are available on this device.
     ///
-    /// - Returns: List of services.
-    /// - Throws: An error if the launchctl path cannot be obatined or the output is invalid.
-    public func services() throws -> [Service] {
-        return try shell.capture([try launchCtlPath().path, "list"]).dematerialize().split(separator: "\n")
+    /// - Returns: List of services or a simulator error if the launchctl path cannot be obtained or the output is invalid.
+    public func services() -> Result<[Service], SimulatorError> {
+        let launchCtlPathResult = launchCtlPath()
+        if launchCtlPathResult.error != nil {
+            return .failure(launchCtlPathResult.error!)
+        }
+
+        let result = shell.capture([launchCtlPathResult.value!.path, "list"])
+        if result.error != nil {
+            return result.map({ _ in [] }).mapError(SimulatorError.shell)
+        }
+        let services = result.value!.split(separator: "\n")
             .dropFirst()
             .compactMap({ (line) -> Service? in
                 let components = line.split(separator: "\t")
-                if components.count != 3 { throw SimulatorError.invalidLaunchCtlListOutput }
+                if components.count != 3 { return nil }
                 let pid = String(components[0])
                 let status = Int(components[1])!
                 let label = String(components[2])
                 return Service(pid: pid, status: status, label: label)
             })
+        return .success(services)
     }
 
     /// It reloads the device state until a certain condition is met.
     ///
     /// - Parameters:
-    ///   - timeout: Timeout period after which the method throws if the condition hasn't been met.
+    ///   - timeout: Timeout period after which the method returns an error if the condition hasn't been met.
     ///   - until: Condition that needs to be met in order fot the method to return.
-    /// - Throws: An error if the method times out.
-    public mutating func wait(timeout: TimeInterval = 30, until: (Device) -> Bool) throws {
+    /// - Returns: A result with an error if it times out or the device state can't be reloaded.
+    public mutating func wait(timeout: TimeInterval = 30, until: (Device) -> Bool) -> Result<Void, SimulatorError> {
         let timeoutDate = Date().addingTimeInterval(timeout)
 
         while true {
             sleep(1)
-            try reload()
+            let reloadResult = reload()
+            if reloadResult.error != nil {
+                return reloadResult
+            }
             if until(self) {
                 break
             } else if Date() > timeoutDate {
-                throw SimulatorError.timeoutError
+                return .failure(SimulatorError.timeoutError)
             }
         }
+        return .success(())
     }
 
     /// Reloads the device's attributes and syncs them with the simctl output.
     ///
-    /// - Throws: An error if the device can't be obtained from simctl.
-    public mutating func reload() throws {
-        let list = try Device.list()
-        guard let device = list.first(where: { $0.udid == udid }) else { return }
+    /// - Returns: A result with an error if the device can't be obtained from simctl.
+    public mutating func reload() -> Result<Void, SimulatorError> {
+        let listResult = Device.list()
+        if listResult.error != nil {
+            return listResult.map({ _ in () })
+        }
+        guard let device = listResult.value!.first(where: { $0.udid == udid }) else { return .success(()) }
         availability = device.availability
         state = device.state
         isAvailable = device.isAvailable
@@ -302,6 +341,7 @@ public struct Device: Decodable, Equatable {
         udid = device.udid
         availabilityError = device.availabilityError
         runtimeName = device.runtimeName
+        return .success(())
     }
 
     // MARK: - Internal
@@ -309,43 +349,67 @@ public struct Device: Decodable, Equatable {
     /// Returns the runtime path.
     ///
     /// - Parameter xcode: Xcode instance to read Xcode variables.
-    /// - Returns: Runtime path.
-    /// - Throws: An error if the path cannot be obtained.
-    func runtimePath(xcode: Xcoding) throws -> URL {
+    /// - Returns: Runtime path or a simulator error.
+    func runtimePath(xcode: Xcoding) -> Result<URL, SimulatorError> {
         let fileManager = FileManager.default
-        let runtimeIdentifier = try self.runtimeIdentifier()
+        let runtimeIdentifierResult = runtimeIdentifier()
+        if runtimeIdentifierResult.error != nil {
+            return .failure(runtimeIdentifierResult.error!)
+        }
 
         // We check the runtimes in the Xcode profiles directory and the developer CoreSimulator folder
         var pathsToCheck: [URL] = []
 
-        if let path = try xcode.runtimeProfilesPath(platform: self.runtime().platform) {
+        let runtimeResult = runtime()
+        if runtimeResult.error != nil {
+            return .failure(runtimeResult.error!)
+        }
+
+        let runtimeProfilesPathResult = xcode.runtimeProfilesPath(platform: runtimeResult.value!.platform)
+        if runtimeProfilesPathResult.error != nil {
+            return .failure(runtimeProfilesPathResult.error!)
+        }
+        if let path = runtimeProfilesPathResult.value! {
             pathsToCheck.append(path)
         }
         pathsToCheck.append(URL(fileURLWithPath: "/Library/Developer/CoreSimulator/Profiles/Runtimes/"))
-        let paths = try pathsToCheck.flatMap { try fileManager.contentsOfDirectory(at: $0, includingPropertiesForKeys: nil, options: []) }
+        let pathsResult = Result {
+            try pathsToCheck.flatMap { try fileManager.contentsOfDirectory(at: $0, includingPropertiesForKeys: nil, options: []) }
+        }.mapError(SimulatorError.fileManager)
+        if pathsResult.error != nil {
+            return .failure(pathsResult.error!)
+        }
 
         // We check that the the runtime bundle identifier matches the device runtime id.
-        for path in paths {
+        for path in pathsResult.value! {
             let plistPath = path.appendingPathComponent("Contents/Info.plist")
             if !fileManager.fileExists(atPath: plistPath.path) {
                 continue
             }
-            let plistData = try Data(contentsOf: plistPath)
-            guard let plist = try PropertyListSerialization.propertyList(from: plistData,
-                                                                         options: [],
-                                                                         format: nil) as? [String: Any],
+            let plistResult: Result<Any, SimulatorError> = Result {
+                let plistData = try Data(contentsOf: plistPath)
+                return try PropertyListSerialization.propertyList(from: plistData,
+                                                                  options: [],
+                                                                  format: nil)
+            }.mapError(SimulatorError.plistSerialize)
+
+            if plistResult.error != nil {
+                return .failure(plistResult.error!)
+            }
+
+            guard let plist = plistResult.value! as? [String: Any],
                 let bundleIdentifier = plist["CFBundleIdentifier"] as? String else {
                 continue
             }
-            if bundleIdentifier != runtimeIdentifier {
+            if bundleIdentifier != runtimeIdentifierResult.value! {
                 continue
             }
             let rootPath = path.appendingPathComponent("Contents/Resources/RuntimeRoot")
             if fileManager.fileExists(atPath: rootPath.path) {
-                return rootPath
+                return .success(rootPath)
             }
         }
-        throw SimulatorError.runtimeProfileNotFound
+        return .failure(.runtimeProfileNotFound)
     }
 
     // MARK: - Static

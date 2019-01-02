@@ -1,4 +1,5 @@
 import Foundation
+import Shell
 
 public enum SimulatorError: Error, CustomStringConvertible {
     /// Thrown the underlying command doesn't return any output.
@@ -9,6 +10,9 @@ public enum SimulatorError: Error, CustomStringConvertible {
 
     /// Thrown when the JSON output cannot be decoded.
     case jsonDecode(Error)
+
+    /// Thrown when a plist file cannot be decoded.
+    case plistSerialize(Error)
 
     /// Thrown when the command output has an invalid/unexpected output.
     case invalidFormat
@@ -22,17 +26,17 @@ public enum SimulatorError: Error, CustomStringConvertible {
     /// Thrown when the simulator runtime profile cannot be found.
     case runtimeProfileNotFound
 
-    /// Thrown when the output from the launchtl list command cannot be parsed.
-    case invalidLaunchCtlListOutput
-
     /// Thrown when Xcode is not found using xcode-select
     case xcodeNotFound
 
     /// Thrown when a command exits unsuccessfully
-    case shellError(String?)
+    case shell(ShellError)
 
     /// Thrown when the method times out.
     case timeoutError
+
+    /// Thrown by the file manager.
+    case fileManager(Error)
 
     public var description: String {
         switch self {
@@ -50,18 +54,16 @@ public enum SimulatorError: Error, CustomStringConvertible {
             return "Runtime not found"
         case .runtimeProfileNotFound:
             return "Runtime profile not found"
-        case .invalidLaunchCtlListOutput:
-            return "Invalid launchctl output"
         case .xcodeNotFound:
             return "Xcode not found running xcode-select"
-        case let .shellError(error):
-            if let error = error {
-                return "Error running command: \(error)"
-            } else {
-                return "Error running command"
-            }
+        case let .shell(error):
+            return "Error running command: \(error)"
         case .timeoutError:
             return "Timeout error"
+        case let .plistSerialize(error):
+            return "Error serializing plist file: \(error)"
+        case let .fileManager(error):
+            return "File manager error: \(error)"
         }
     }
 }

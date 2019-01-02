@@ -1,6 +1,6 @@
 import Foundation
-import Shell
 import Result
+import Shell
 
 var shell = Shell()
 
@@ -8,43 +8,39 @@ extension Shell {
     /// Runs open with the given arguments.
     ///
     /// - Parameter arguments: Arguments to pass to open.
-    /// - Throws: An error if the command cannot be launched.
-    func open(_ arguments: [String]) throws {
+    /// - Returns: A result with a simulator error
+    func open(_ arguments: [String]) -> Result<Void, SimulatorError> {
         var arguments = arguments
         arguments.insert("/usr/bin/open", at: 0)
-
-        try sync(arguments).dematerialize()
+        return sync(arguments).mapError(SimulatorError.shell)
     }
 
-    /// Returns the path to Xcode.
+    /// Get the path to Xcode.
     ///
-    /// - Returns: Xcode path.
-    /// - Throws: A SimulatorError if Xcode can't be found in the system.
-    func xcodePath() throws -> URL {
-        let result = try capture(["/usr/bin/xcode-select", "-p"])
-        let path = try result.dematerialize().chomp()
-        return URL(fileURLWithPath: path, isDirectory: true)
+    /// - Returns: Xcode path or a simulator error.
+    func xcodePath() -> Result<URL, SimulatorError> {
+        let result = capture(["/usr/bin/xcode-select", "-p"])
+        return result.map({ URL(fileURLWithPath: $0.chomp(), isDirectory: true) }).mapError(SimulatorError.shell)
     }
 
     /// Runs simctl and returns its output.
     ///
     /// - Parameter arguments: Arguments to pass to simctl.
-    /// - Returns: The command output.
-    /// - Throws: A SimulatorError if the command fails.
-    func captureSimctl(_ arguments: [String]) throws -> String {
+    /// - Returns: The command output as a string or a simulator error.
+    func captureSimctl(_ arguments: [String]) -> Result<String, SimulatorError> {
         var arguments = arguments
         arguments.insert(contentsOf: ["/usr/bin/xcrun", "simctl"], at: 0)
-        return try capture(arguments).dematerialize().chomp()
+        return capture(arguments).map({ $0.chomp() }).mapError(SimulatorError.shell)
     }
 
     /// Runs the simctl command.
     ///
     /// - Parameter arguments: Arguments to pass to simctl.
-    /// - Throws: A SimulatorError if the command fails.
-    func runSimctl(_ arguments: [String]) throws {
+    /// - Returns: The command result.
+    func runSimctl(_ arguments: [String]) -> Result<Void, SimulatorError> {
         var arguments = arguments
         arguments.insert(contentsOf: ["/usr/bin/xcrun", "simctl"], at: 0)
 
-        try sync(arguments).dematerialize()
+        return sync(arguments).mapError(SimulatorError.shell)
     }
 }

@@ -5,12 +5,12 @@ import XCTest
 
 final class RuntimeTests: XCTestCase {
     func test_list() throws {
-        let got = try XCTTry(Runtime.list())
-        XCTAssertNotEqual(got.count, 0)
+        let got = Runtime.list().value
+        XCTAssertNotEqual(got?.count, 0)
     }
 
     func test_latest() throws {
-        let got = try XCTTry(Runtime.latest(platform: .iOS))
-        XCTAssertNotNil(got)
+        let got = Runtime.latest(platform: .iOS).value
+        XCTAssertNotNil(got ?? nil)
     }
 }
