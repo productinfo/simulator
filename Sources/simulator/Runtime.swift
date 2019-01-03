@@ -88,17 +88,13 @@ public struct Runtime: Decodable, Equatable {
     public static func list() -> Result<[Runtime], SimulatorError> {
         let decoder = JSONDecoder()
         let outputResult = shell.captureSimctl(["list", "-j", "runtimes"])
-        if outputResult.error != nil {
-            return outputResult.map({ _ in [] })
-        }
+        if outputResult.error != nil { return .failure(outputResult.error!) }
 
         let data = outputResult.value!.data(using: .utf8) ?? Data()
         let jsonResult = Result {
             try JSONSerialization.jsonObject(with: data, options: [])
         }.mapError(SimulatorError.jsonSerialize)
-        if jsonResult.error != nil {
-            return jsonResult.map({ _ in [] })
-        }
+        if jsonResult.error != nil { return .failure(jsonResult.error!) }
 
         guard let dictionary = jsonResult.value! as? [String: Any],
             let runtimes = dictionary["runtimes"] as? [[String: Any]] else {
@@ -108,9 +104,7 @@ public struct Runtime: Decodable, Equatable {
         let runtimesDataResult = Result {
             try JSONSerialization.data(withJSONObject: runtimes, options: [])
         }.mapError(SimulatorError.jsonSerialize)
-        if runtimesDataResult.error != nil {
-            return runtimesDataResult.map({ _ in [] })
-        }
+        if runtimesDataResult.error != nil { return .failure(runtimesDataResult.error!) }
 
         return Result {
             try decoder.decode([Runtime].self, from: runtimesDataResult.value!)
@@ -124,9 +118,7 @@ public struct Runtime: Decodable, Equatable {
     /// - Returns: Latest available runtime or a simulator error
     public static func latest(platform: Platform) -> Result<Runtime?, SimulatorError> {
         let listResult = list()
-        if listResult.error != nil {
-            return listResult.map({ _ in nil })
-        }
+        if listResult.error != nil { return .failure(listResult.error!) }
         let runtime = listResult.value!
             .filter({ $0.platform == platform })
             .sorted(by: { $0.version < $1.version })

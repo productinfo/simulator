@@ -80,17 +80,13 @@ public struct Device: Decodable, Equatable {
     public static func list() -> Result<[Device], SimulatorError> {
         let decoder = JSONDecoder()
         let outputResult = shell.captureSimctl(["list", "-j", "devices"])
-        if outputResult.error != nil {
-            return outputResult.map({ _ in [] })
-        }
+        if outputResult.error != nil { return .failure(outputResult.error!) }
 
         let data = outputResult.value!.data(using: .utf8) ?? Data()
         let jsonResult = Result {
             try JSONSerialization.jsonObject(with: data, options: [])
         }.mapError(SimulatorError.jsonSerialize)
-        if jsonResult.error != nil {
-            return jsonResult.map({ _ in [] })
-        }
+        if jsonResult.error != nil { return .failure(jsonResult.error!) }
 
         guard let dictionary = jsonResult.value! as? [String: Any],
             let runtimes = dictionary["devices"] as? [String: [[String: Any]]] else {
@@ -121,9 +117,7 @@ public struct Device: Decodable, Equatable {
     /// - Returns: A result with an error if the device cannot be launched.
     public func launch() -> Result<Void, SimulatorError> {
         let xcodePathResult = shell.xcodePath()
-        if xcodePathResult.error != nil {
-            return xcodePathResult.map({ _ in () })
-        }
+        if xcodePathResult.error != nil { return .failure(xcodePathResult.error!) }
         return shell.open(["-Fgn", "\(xcodePathResult.value!.path)/Applications/Simulator.app", "--args", "-CurrentDeviceUDID", udid])
     }
 
@@ -142,10 +136,8 @@ public struct Device: Decodable, Equatable {
     @discardableResult
     public func kill() -> Result<Bool, SimulatorError> {
         let argument = "ps xww | grep Simulator.app | grep -s \(udid) | grep -v grep | awk '{print $1}'"
-        let killResult = shell.capture(["/bin/bash", "-c", argument])
-        if killResult.error != nil {
-            return killResult.map({ _ in false }).mapError(SimulatorError.shell)
-        }
+        let killResult = shell.capture(["/bin/bash", "-c", argument]).mapError(SimulatorError.shell)
+        if killResult.error != nil { return .failure(killResult.error!) }
 
         guard let pid = Int(killResult.value!.chomp()) else {
             return .success(false)
@@ -284,10 +276,9 @@ public struct Device: Decodable, Equatable {
             return .failure(launchCtlPathResult.error!)
         }
 
-        let result = shell.capture([launchCtlPathResult.value!.path, "list"])
-        if result.error != nil {
-            return result.map({ _ in [] }).mapError(SimulatorError.shell)
-        }
+        let result = shell.capture([launchCtlPathResult.value!.path, "list"]).mapError(SimulatorError.shell)
+        if result.error != nil { return .failure(result.error!) }
+
         let services = result.value!.split(separator: "\n")
             .dropFirst()
             .compactMap({ (line) -> Service? in
@@ -330,9 +321,8 @@ public struct Device: Decodable, Equatable {
     /// - Returns: A result with an error if the device can't be obtained from simctl.
     public mutating func reload() -> Result<Void, SimulatorError> {
         let listResult = Device.list()
-        if listResult.error != nil {
-            return listResult.map({ _ in () })
-        }
+        if listResult.error != nil { return .failure(listResult.error!) }
+
         guard let device = listResult.value!.first(where: { $0.udid == udid }) else { return .success(()) }
         availability = device.availability
         state = device.state
