@@ -106,9 +106,9 @@ public struct Runtime: Decodable, Equatable {
         }.mapError(SimulatorError.jsonSerialize)
         if runtimesDataResult.error != nil { return .failure(runtimesDataResult.error!) }
 
-        return Result {
+        return Result.init(catching: {
             try decoder.decode([Runtime].self, from: runtimesDataResult.value!)
-        }
+        })
     }
 
     /// Returns the latest runtime of a given platform.
