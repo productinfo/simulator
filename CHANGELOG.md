@@ -7,6 +7,7 @@ Please, check out guidelines: https://keepachangelog.com/en/1.0.0/
 ### Changed
 
 - Bump Shell version to 1.0.1 https://github.com/tuist/simulator/pull/13 by @pepibumur
+- **Breaking** Use `Result` instead of throws in the public interface https://github.com/tuist/simulator/pull/14 by @pepibumur.
 
 ## 0.5.1
 
