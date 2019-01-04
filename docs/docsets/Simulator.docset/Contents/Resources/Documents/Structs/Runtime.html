@@ -488,9 +488,9 @@ Example: watchOS 5.1</p>
                 <li class="item">
                   <div class="item-heading">
                     <code>
-                    <a name="/s:9Simulator7RuntimeV4listSayACGyKFZ"></a>
+                    <a name="/s:9Simulator7RuntimeV4list6ResultAEOySayACGAA0A5ErrorOGyFZ"></a>
                     <a name="//apple_ref/swift/Method/list()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9Simulator7RuntimeV4listSayACGyKFZ">list()</a>
+                    <a class="token" href="#/s:9Simulator7RuntimeV4list6ResultAEOySayACGAA0A5ErrorOGyFZ">list()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -498,25 +498,20 @@ Example: watchOS 5.1</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Returns the lit of runtimes from the system.</p>
-<div class="aside aside-throws">
-    <p class="aside-title">Throws</p>
-    A SimulatorError if the runtimes cannot be fetched.
-
-</div>
+                        <p>Returns the list of runtimes from the system.</p>
 
                       </div>
                       <div class="declaration">
                         <h5>Declaration</h5>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">list</span><span class="p">()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">Runtime</span><span class="p">]</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">list</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Result</span><span class="o">&lt;</span><span class="p">[</span><span class="kt">Runtime</span><span class="p">],</span> <span class="kt"><a href="../Enums/SimulatorError.html">SimulatorError</a></span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
                       <div>
                         <h5>Return Value</h5>
-                        <p>List of runtimes.</p>
+                        <p>List or runtimes or a simulator error.</p>
                       </div>
                       <div class="slightly-smaller">
                         
@@ -527,9 +522,9 @@ Example: watchOS 5.1</p>
                 <li class="item">
                   <div class="item-heading">
                     <code>
-                    <a name="/s:9Simulator7RuntimeV6latest8platformACSgAC8PlatformO_tKFZ"></a>
+                    <a name="/s:9Simulator7RuntimeV6latest8platform6ResultAFOyACSgAA0A5ErrorOGAC8PlatformO_tFZ"></a>
                     <a name="//apple_ref/swift/Method/latest(platform:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:9Simulator7RuntimeV6latest8platformACSgAC8PlatformO_tKFZ">latest(platform:)</a>
+                    <a class="token" href="#/s:9Simulator7RuntimeV6latest8platform6ResultAFOyACSgAA0A5ErrorOGAC8PlatformO_tFZ">latest(platform:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -539,18 +534,13 @@ Example: watchOS 5.1</p>
                       <div class="abstract">
                         <p>Returns the latest runtime of a given platform.
 This is useful, for example, to determine the latest available runtime we can run our tests on.</p>
-<div class="aside aside-throws">
-    <p class="aside-title">Throws</p>
-    An error if the list of runtimes cannot be obtained.
-
-</div>
 
                       </div>
                       <div class="declaration">
                         <h5>Declaration</h5>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">latest</span><span class="p">(</span><span class="nv">platform</span><span class="p">:</span> <span class="kt"><a href="../Structs/Runtime/Platform.html">Platform</a></span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Runtime</span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">latest</span><span class="p">(</span><span class="nv">platform</span><span class="p">:</span> <span class="kt"><a href="../Structs/Runtime/Platform.html">Platform</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Result</span><span class="o">&lt;</span><span class="kt">Runtime</span><span class="p">?,</span> <span class="kt"><a href="../Enums/SimulatorError.html">SimulatorError</a></span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -575,7 +565,7 @@ This is useful, for example, to determine the latest available runtime we can ru
                       </div>
                       <div>
                         <h5>Return Value</h5>
-                        <p>Latest available runtime.</p>
+                        <p>Latest available runtime or a simulator error</p>
                       </div>
                       <div class="slightly-smaller">
                         
@@ -592,7 +582,7 @@ This is useful, for example, to determine the latest available runtime we can ru
     </div>
     <section class='footer'>
       <p>© 2018 <a class="link" href="https://github.com/tuist" target="_blank" rel="external">Tuist</a>. All rights reserved.</p>
-      <p>Generated by <a class='link' href='https://github.com/realm/jazzy' target='_blank' rel='external'>jazzy ♪♫ v0.9.3</a>, a <a class='link' href='http://realm.io' target='_blank' rel='external'>Realm</a> project.</p>
+      <p>Generated by <a class='link' href='https://github.com/realm/jazzy' target='_blank' rel='external'>jazzy ♪♫ v0.9.4</a>, a <a class='link' href='http://realm.io' target='_blank' rel='external'>Realm</a> project.</p>
     </section>
   </body>
 </div>

@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/antitypical/Result.git",
         "state": {
           "branch": null,
-          "revision": "f5a5641043bdca66ec00ea349904505b6471365b",
-          "version": "4.0.1"
+          "revision": "2ca499ba456795616fbc471561ff1d963e6ae160",
+          "version": "4.1.0"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/tuist/Shell.git",
         "state": {
           "branch": null,
-          "revision": "712a57c49374e962bda2ed0692972be9c96a36df",
-          "version": "1.0.2"
+          "revision": "0ae2f5cef829c632e04c8c228d851978d2076ae7",
+          "version": "1.1.0"
         }
       },
       {
