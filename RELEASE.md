@@ -9,11 +9,10 @@ In this documents you'll find all the necessary steps to release a new version o
 3. Validate the state of the project by running `make release-check`
 4. Update the `CHANGELOG.md` adding a new entry at the top with the next version. Make sure that all the changes in the version that is about to be released are properly formatted. Commit the changes in `CHANGELOG.md`.
 5. Update the version in the `Simulator.podspec` and `README.md` files.
-6. Generate the documentation by running [this script](https://github.com/tuist/jazzy-theme).
-7. Commit, tag and push the changes to GitHub.
-8. Create a new release on [GitHub](https://github.com/tuist/simulator) including the information from the last entry in the `CHANGELOG.md`.
-9. Run `make carthage-archive` and attach the `Simulator.framework.zip` artifact to the GitHub release.
-10. Push the pods with `make pod-push`.
+6. Commit, tag and push the changes to GitHub.
+7. Create a new release on [GitHub](https://github.com/tuist/simulator) including the information from the last entry in the `CHANGELOG.md`.
+8. Run `make carthage-archive` and attach the `Simulator.framework.zip` artifact to the GitHub release.
+9. Push the pods with `make pod-push`.
 
 ### Notes
 
